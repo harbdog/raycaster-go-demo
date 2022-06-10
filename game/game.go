@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
-	"strconv"
 
 	_ "image/png"
 
@@ -21,14 +20,10 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/spf13/viper"
 )
 
 const (
-	// ebiten constants
-	screenWidth  = 1024
-	screenHeight = 768
-	renderScale  = 0.75
-
 	//--RaycastEngine constants
 	//--set constant, texture size to be the wall (and sprite) texture size--//
 	texWidth = 256
@@ -43,6 +38,11 @@ type Game struct {
 	//--create slicer and declare slices--//
 	tex    *raycaster.TextureHandler
 	slices []*image.Rectangle
+
+	// window resolution and scaling
+	screenWidth  int
+	screenHeight int
+	renderScale  float64
 
 	//--viewport width / height--//
 	width  int
@@ -89,14 +89,14 @@ func NewGame() *Game {
 	// initialize Game object
 	g := new(Game)
 
-	g.debug, _ = strconv.ParseBool(os.Getenv("RAYCASTER_DEBUG"))
+	g.initConfig()
 
-	ebiten.SetWindowSize(screenWidth, screenHeight)
+	ebiten.SetWindowSize(g.screenWidth, g.screenHeight)
 	ebiten.SetWindowTitle("Raycaster-Go")
 
 	// use scale to keep the desired window width and height
-	g.width = int(math.Floor(float64(screenWidth) * renderScale))
-	g.height = int(math.Floor(float64(screenHeight) * renderScale))
+	g.width = int(math.Floor(float64(g.screenWidth) * g.renderScale))
+	g.height = int(math.Floor(float64(g.screenHeight) * g.renderScale))
 
 	g.tex = raycaster.NewTextureHandler(texWidth)
 
@@ -145,6 +145,61 @@ func NewGame() *Game {
 	g.updatePlayerCamera(true)
 
 	return g
+}
+
+func (g *Game) initConfig() {
+	viper.SetConfigName("demo-config")
+	viper.SetConfigType("json")
+	viper.SetEnvPrefix("demo")
+
+	userHomePath, _ := os.UserHomeDir()
+	if userHomePath != "" {
+		userHomePath = userHomePath + "/.raycaster-go-demo"
+		viper.AddConfigPath(userHomePath)
+	}
+	viper.AddConfigPath(".")
+
+	// set default config values
+	viper.SetDefault("debug", false)
+	viper.SetDefault("screen.width", 1024)
+	viper.SetDefault("screen.height", 768)
+	viper.SetDefault("screen.renderScale", 0.75)
+
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Print(err)
+	}
+
+	// get config values
+	g.screenWidth = viper.GetInt("screen.width")
+	g.screenHeight = viper.GetInt("screen.height")
+	g.renderScale = viper.GetFloat64("screen.renderScale")
+	g.debug = viper.GetBool("debug")
+}
+
+func (g *Game) SaveConfig() error {
+	userConfigPath, _ := os.UserHomeDir()
+	if userConfigPath == "" {
+		userConfigPath = "./"
+	}
+	userConfigPath += "/.raycaster-go-demo"
+
+	userConfig := userConfigPath + "/demo-config.json"
+	log.Print("Saving config file ", userConfig)
+
+	if _, err := os.Stat(userConfigPath); os.IsNotExist(err) {
+		err = os.MkdirAll(userConfigPath, os.ModePerm)
+		if err != nil {
+			log.Print(err)
+			return err
+		}
+	}
+	err := viper.WriteConfigAs(userConfig)
+	if err != nil {
+		log.Print(err)
+	}
+
+	return err
 }
 
 // loadContent will be called once per game and is the place to load
@@ -428,7 +483,7 @@ func (g *Game) Run() {
 // Layout takes the outside size (e.g., the window size) and returns the (logical) screen size.
 // If you don't have to adjust the screen size with the outside size, just return a fixed size.
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return screenWidth * renderScale, screenHeight * renderScale
+	return int(float64(g.screenWidth) * g.renderScale), int(float64(g.screenHeight) * g.renderScale)
 }
 
 // Draw draws the game screen.
