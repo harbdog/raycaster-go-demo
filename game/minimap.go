@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"sort"
 
-	"github.com/harbdog/raycaster-go/engine/model"
+	"github.com/harbdog/raycaster-go-demo/game/model"
 )
 
 func (g *Game) miniMap() *image.RGBA {
@@ -36,7 +36,7 @@ func (g *Game) miniMap() *image.RGBA {
 	for _, sprite := range sprites {
 		if sprite.MapColor.A > 0 {
 
-			m.Set(int(sprite.Pos.X), int(sprite.Pos.Y), sprite.MapColor)
+			m.Set(int(sprite.Position.X), int(sprite.Position.Y), sprite.MapColor)
 		}
 	}
 
@@ -54,12 +54,12 @@ func (g *Game) miniMap() *image.RGBA {
 	for _, projectile := range projectiles {
 		if projectile.MapColor.A > 0 {
 
-			m.Set(int(projectile.Pos.X), int(projectile.Pos.Y), projectile.MapColor)
+			m.Set(int(projectile.Position.X), int(projectile.Position.Y), projectile.MapColor)
 		}
 	}
 
 	// player position
-	m.Set(int(g.player.Pos.X), int(g.player.Pos.Y), g.player.MapColor)
+	m.Set(int(g.player.Position.X), int(g.player.Position.Y), g.player.MapColor)
 
 	return m
 }

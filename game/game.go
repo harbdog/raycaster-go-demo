@@ -14,12 +14,12 @@ import (
 
 	_ "image/png"
 
-	"github.com/harbdog/raycaster-go"
-	"github.com/harbdog/raycaster-go/engine/model"
-	"github.com/harbdog/raycaster-go/geom"
+	"github.com/harbdog/raycaster-go-demo/game/model"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/harbdog/raycaster-go"
+	"github.com/harbdog/raycaster-go/geom"
 	"github.com/spf13/viper"
 )
 
@@ -63,7 +63,7 @@ type Game struct {
 	crosshairs *model.Crosshairs
 
 	//--array of levels, levels refer to "floors" of the world--//
-	mapObj       *model.Map
+	mapObj       *raycaster.Map
 	levels       []*raycaster.Level
 	spriteLvls   []*raycaster.Level
 	floorLvl     *raycaster.HorLevel
@@ -104,7 +104,7 @@ func NewGame() *Game {
 	g.slices = g.tex.GetSlices()
 
 	// load map
-	g.mapObj = model.NewMap()
+	g.mapObj = raycaster.NewMap()
 
 	//--inits the levels--//
 	g.levels, g.floorLvl = g.createLevels(4)
@@ -491,7 +491,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 func (g *Game) Draw(screen *ebiten.Image) {
 	// Put projectiles together with sprites for raycasting both as sprites
 	numSprites, numProjectiles, numEffects := len(g.sprites), len(g.projectiles), len(g.effects)
-	raycastSprites := make([]*model.Sprite, numSprites+numProjectiles+numEffects)
+	raycastSprites := make([]raycaster.Sprite, numSprites+numProjectiles+numEffects)
 	index := 0
 	for sprite := range g.sprites {
 		raycastSprites[index] = sprite
@@ -530,13 +530,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		op := &ebiten.DrawImageOptions{}
 		op.Filter = ebiten.FilterNearest
 
-		weaponScale := w.Scale
+		weaponScale := w.Scale()
 		op.GeoM.Scale(weaponScale, weaponScale)
 		op.GeoM.Translate(
 			float64(g.width)/2-float64(w.W)*weaponScale/2,
 			float64(g.height)-float64(w.H)*weaponScale+1,
 		)
-		screen.DrawImage(w.GetTexture(), op)
+		screen.DrawImage(w.Texture(), op)
 
 		w.Update()
 	}
@@ -546,16 +546,16 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		op := &ebiten.DrawImageOptions{}
 		op.Filter = ebiten.FilterNearest
 
-		crosshairScale := g.crosshairs.Scale
+		crosshairScale := g.crosshairs.Scale()
 		op.GeoM.Scale(crosshairScale, crosshairScale)
 		op.GeoM.Translate(
 			float64(g.width)/2-float64(g.crosshairs.W)*crosshairScale/2,
 			float64(g.height)/2-float64(g.crosshairs.H)*crosshairScale/2,
 		)
-		screen.DrawImage(g.crosshairs.GetTexture(), op)
+		screen.DrawImage(g.crosshairs.Texture(), op)
 
 		if g.crosshairs.IsHitIndicatorActive() {
-			screen.DrawImage(g.crosshairs.HitIndicator.GetTexture(), op)
+			screen.DrawImage(g.crosshairs.HitIndicator.Texture(), op)
 			g.crosshairs.Update()
 		}
 	}
@@ -777,11 +777,11 @@ func (g *Game) handleInput() {
 
 // Move player by move speed in the forward/backward direction
 func (g *Game) Move(mSpeed float64) {
-	moveLine := geom.LineFromAngle(g.player.Pos.X, g.player.Pos.Y, g.player.Angle, mSpeed)
+	moveLine := geom.LineFromAngle(g.player.Position.X, g.player.Position.Y, g.player.Angle, mSpeed)
 
 	newPos, _, _ := g.getValidMove(g.player.Entity, moveLine.X2, moveLine.Y2, true)
-	if !newPos.Equals(g.player.Pos) {
-		g.player.Pos = newPos
+	if !newPos.Equals(g.player.Pos()) {
+		g.player.Position = newPos
 		g.player.Moved = true
 	}
 }
@@ -792,11 +792,11 @@ func (g *Game) Strafe(sSpeed float64) {
 	if sSpeed < 0 {
 		strafeAngle = -strafeAngle
 	}
-	strafeLine := geom.LineFromAngle(g.player.Pos.X, g.player.Pos.Y, g.player.Angle-strafeAngle, math.Abs(sSpeed))
+	strafeLine := geom.LineFromAngle(g.player.Position.X, g.player.Position.Y, g.player.Angle-strafeAngle, math.Abs(sSpeed))
 
 	newPos, _, _ := g.getValidMove(g.player.Entity, strafeLine.X2, strafeLine.Y2, true)
-	if !newPos.Equals(g.player.Pos) {
-		g.player.Pos = newPos
+	if !newPos.Equals(g.player.Pos()) {
+		g.player.Position = newPos
 		g.player.Moved = true
 	}
 }
@@ -826,26 +826,26 @@ func (g *Game) Pitch(pSpeed float64) {
 }
 
 func (g *Game) Stand() {
-	g.player.PosZ = 0.5
+	g.player.PositionZ = 0.5
 	g.player.Moved = true
 }
 
 func (g *Game) IsStanding() bool {
-	return g.player.PosZ == 0.5
+	return g.player.PosZ() == 0.5
 }
 
 func (g *Game) Jump() {
-	g.player.PosZ = 0.9
+	g.player.PositionZ = 0.9
 	g.player.Moved = true
 }
 
 func (g *Game) Crouch() {
-	g.player.PosZ = 0.3
+	g.player.PositionZ = 0.3
 	g.player.Moved = true
 }
 
 func (g *Game) Prone() {
-	g.player.PosZ = 0.1
+	g.player.PositionZ = 0.1
 	g.player.Moved = true
 }
 
@@ -859,7 +859,7 @@ type EntityCollision struct {
 func (g *Game) getValidMove(entity *model.Entity, moveX, moveY float64, checkAlternate bool) (*geom.Vector2, bool, []*EntityCollision) {
 	newX, newY := moveX, moveY
 
-	posX, posY := entity.Pos.X, entity.Pos.Y
+	posX, posY := entity.Position.X, entity.Position.Y
 	if posX == newX && posY == moveY {
 		return &geom.Vector2{X: posX, Y: posY}, false, []*EntityCollision{}
 	}
@@ -882,14 +882,14 @@ func (g *Game) getValidMove(entity *model.Entity, moveX, moveY float64, checkAlt
 		// TODO: only check for collision if player is somewhat nearby
 
 		// check if movement line intersects with combined collision radii
-		combinedCircle := geom.Circle{X: g.player.Pos.X, Y: g.player.Pos.Y, Radius: g.player.CollisionRadius + entity.CollisionRadius}
+		combinedCircle := geom.Circle{X: g.player.Position.X, Y: g.player.Position.Y, Radius: g.player.CollisionRadius + entity.CollisionRadius}
 		combinedIntersects := geom.LineCircleIntersection(moveLine, combinedCircle, true)
 
 		if len(combinedIntersects) > 0 {
-			playerCircle := geom.Circle{X: g.player.Pos.X, Y: g.player.Pos.Y, Radius: g.player.CollisionRadius}
+			playerCircle := geom.Circle{X: g.player.Position.X, Y: g.player.Position.Y, Radius: g.player.CollisionRadius}
 			for _, chkPoint := range combinedIntersects {
 				// intersections from combined circle radius indicate center point to check intersection toward sprite collision circle
-				chkLine := geom.Line{X1: chkPoint.X, Y1: chkPoint.Y, X2: g.player.Pos.X, Y2: g.player.Pos.Y}
+				chkLine := geom.Line{X1: chkPoint.X, Y1: chkPoint.Y, X2: g.player.Position.X, Y2: g.player.Position.Y}
 				intersectPoints = append(intersectPoints, geom.LineCircleIntersection(chkLine, playerCircle, true)...)
 
 				for _, intersect := range intersectPoints {
@@ -907,14 +907,14 @@ func (g *Game) getValidMove(entity *model.Entity, moveX, moveY float64, checkAlt
 		}
 
 		// check if movement line intersects with combined collision radii
-		combinedCircle := geom.Circle{X: sprite.Pos.X, Y: sprite.Pos.Y, Radius: sprite.CollisionRadius + entity.CollisionRadius}
+		combinedCircle := geom.Circle{X: sprite.Position.X, Y: sprite.Position.Y, Radius: sprite.CollisionRadius + entity.CollisionRadius}
 		combinedIntersects := geom.LineCircleIntersection(moveLine, combinedCircle, true)
 
 		if len(combinedIntersects) > 0 {
-			spriteCircle := geom.Circle{X: sprite.Pos.X, Y: sprite.Pos.Y, Radius: sprite.CollisionRadius}
+			spriteCircle := geom.Circle{X: sprite.Position.X, Y: sprite.Position.Y, Radius: sprite.CollisionRadius}
 			for _, chkPoint := range combinedIntersects {
 				// intersections from combined circle radius indicate center point to check intersection toward sprite collision circle
-				chkLine := geom.Line{X1: chkPoint.X, Y1: chkPoint.Y, X2: sprite.Pos.X, Y2: sprite.Pos.Y}
+				chkLine := geom.Line{X1: chkPoint.X, Y1: chkPoint.Y, X2: sprite.Position.X, Y2: sprite.Position.Y}
 				intersectPoints = append(intersectPoints, geom.LineCircleIntersection(chkLine, spriteCircle, true)...)
 
 				for _, intersect := range intersectPoints {
@@ -1032,7 +1032,7 @@ func (g *Game) fireWeapon() {
 	w.Fire()
 
 	// spawning projectile at player position just slightly below player's center point of view
-	pX, pY, pZ := g.player.Pos.X, g.player.Pos.Y, geom.Clamp(g.player.PosZ-0.15, 0.05, g.player.PosZ+0.5)
+	pX, pY, pZ := g.player.Position.X, g.player.Position.Y, geom.Clamp(g.player.PositionZ-0.15, 0.05, g.player.PositionZ+0.5)
 	// TODO: pitch angle should be based on raycasted angle toward crosshairs, for now just simplified as player pitch angle
 	pAngle, pPitch := g.player.Angle, g.player.Pitch
 
@@ -1052,8 +1052,8 @@ func (g *Game) updatePlayerCamera(forceUpdate bool) {
 	// reset player moved flag to only update camera when necessary
 	g.player.Moved = false
 
-	playerPos := g.player.Pos.Copy()
-	playerPosZ := (g.player.PosZ - 0.5) * float64(g.height)
+	playerPos := g.player.Position.Copy()
+	playerPosZ := (g.player.PositionZ - 0.5) * float64(g.height)
 
 	g.camera.SetPosition(playerPos)
 	g.camera.SetPositionZ(playerPosZ)
@@ -1075,14 +1075,14 @@ func (g *Game) updateProjectiles() {
 				zVelocity = geom.LineFromAngle(0, 0, p.Pitch, realVelocity).Y2
 			}
 
-			vLine := geom.LineFromAngle(p.Pos.X, p.Pos.Y, p.Angle, realVelocity)
+			vLine := geom.LineFromAngle(p.Position.X, p.Position.Y, p.Angle, realVelocity)
 
 			xCheck := vLine.X2
 			yCheck := vLine.Y2
 
 			// TODO: getValidMove needs to be able to take PosZ into account for wall/sprite collisions
 			newPos, isCollision, collisions := g.getValidMove(p.Entity, xCheck, yCheck, false)
-			if isCollision || p.PosZ <= 0 {
+			if isCollision || p.PositionZ <= 0 {
 				// for testing purposes, projectiles instantly get deleted when collision occurs
 				g.deleteProjectile(p)
 
@@ -1094,7 +1094,7 @@ func (g *Game) updateProjectiles() {
 					}
 
 					// TODO: give impact effect optional ability to have some velocity based on the projectile movement upon impact if it didn't hit a wall
-					effect := p.SpawnEffect(newPos.X, newPos.Y, p.PosZ, p.Angle, p.Pitch)
+					effect := p.SpawnEffect(newPos.X, newPos.Y, p.PositionZ, p.Angle, p.Pitch)
 
 					g.addEffect(effect)
 				}
@@ -1108,19 +1108,19 @@ func (g *Game) updateProjectiles() {
 					}
 				}
 			} else {
-				p.Pos = newPos
+				p.Position = newPos
 
 				if zVelocity != 0 {
-					p.PosZ += zVelocity
+					p.PositionZ += zVelocity
 				}
 			}
 		}
-		p.Update(g.player.Pos)
+		p.Update(g.player.Position)
 	}
 
 	// Testing animated effects (explosions)
 	for e := range g.effects {
-		e.Update(g.player.Pos)
+		e.Update(g.player.Position)
 		if e.GetLoopCounter() >= e.LoopCount {
 			g.deleteEffect(e)
 		}
@@ -1131,7 +1131,7 @@ func (g *Game) updateSprites() {
 	// Testing animated sprite movement
 	for s := range g.sprites {
 		if s.Velocity != 0 {
-			vLine := geom.LineFromAngle(s.Pos.X, s.Pos.Y, s.Angle, s.Velocity)
+			vLine := geom.LineFromAngle(s.Position.X, s.Position.Y, s.Angle, s.Velocity)
 
 			xCheck := vLine.X2
 			yCheck := vLine.Y2
@@ -1142,10 +1142,10 @@ func (g *Game) updateSprites() {
 				s.Angle = randFloat(-math.Pi, math.Pi)
 				s.Velocity = randFloat(0.01, 0.03)
 			} else {
-				s.Pos = newPos
+				s.Position = newPos
 			}
 		}
-		s.Update(g.player.Pos)
+		s.Update(g.player.Position)
 	}
 }
 
