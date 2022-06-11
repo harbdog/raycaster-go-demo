@@ -14,9 +14,9 @@ import (
 
 	_ "image/png"
 
-	"github.com/harbdog/raycaster-go/engine/geom"
+	"github.com/harbdog/raycaster-go"
 	"github.com/harbdog/raycaster-go/engine/model"
-	"github.com/harbdog/raycaster-go/engine/raycaster"
+	"github.com/harbdog/raycaster-go/geom"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -92,7 +92,7 @@ func NewGame() *Game {
 	g.initConfig()
 
 	ebiten.SetWindowSize(g.screenWidth, g.screenHeight)
-	ebiten.SetWindowTitle("Raycaster-Go")
+	ebiten.SetWindowTitle("Raycaster-Go Demo")
 
 	// use scale to keep the desired window width and height
 	g.width = int(math.Floor(float64(g.screenWidth) * g.renderScale))
