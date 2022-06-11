@@ -63,7 +63,7 @@ type Game struct {
 	crosshairs *model.Crosshairs
 
 	//--array of levels, levels refer to "floors" of the world--//
-	mapObj       *raycaster.Map
+	mapObj       *model.Map
 	levels       []*raycaster.Level
 	spriteLvls   []*raycaster.Level
 	floorLvl     *raycaster.HorLevel
@@ -104,7 +104,7 @@ func NewGame() *Game {
 	g.slices = g.tex.GetSlices()
 
 	// load map
-	g.mapObj = raycaster.NewMap()
+	g.mapObj = model.NewMap()
 
 	//--inits the levels--//
 	g.levels, g.floorLvl = g.createLevels(4)
