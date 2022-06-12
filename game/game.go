@@ -33,6 +33,14 @@ const (
 	clipDistance = 0.1
 )
 
+type MouseMode int
+
+const (
+	MouseModeLook MouseMode = iota
+	MouseModeMove
+	MouseModeCursor
+)
+
 // Game - This is the main type for your game.
 type Game struct {
 	//--create slicer and declare slices--//
@@ -52,7 +60,7 @@ type Game struct {
 	//--define camera and renderer--//
 	camera *raycaster.Camera
 
-	mouseMode       raycaster.MouseMode
+	mouseMode       MouseMode
 	mouseModeToggle bool
 	mouseX, mouseY  int
 
@@ -120,7 +128,7 @@ func NewGame() *Game {
 
 	// init mouse movement mode
 	ebiten.SetCursorMode(ebiten.CursorModeCaptured)
-	g.mouseMode = raycaster.MouseModeMove
+	g.mouseMode = MouseModeMove
 	g.mouseX, g.mouseY = math.MinInt32, math.MinInt32
 
 	g.debouncedKeys = make(map[ebiten.Key]int, 8)
@@ -590,9 +598,9 @@ func (g *Game) handleInput() {
 
 	switch {
 	case ebiten.IsKeyPressed(ebiten.KeyEscape):
-		if g.mouseMode != raycaster.MouseModeCursor {
+		if g.mouseMode != MouseModeCursor {
 			ebiten.SetCursorMode(ebiten.CursorModeVisible)
-			g.mouseMode = raycaster.MouseModeCursor
+			g.mouseMode = MouseModeCursor
 			g.mouseModeToggle = true
 			g.debounceInput(ebiten.KeyEscape, 5)
 		} else if g.isDebouncedInput(ebiten.KeyEscape) {
@@ -604,26 +612,26 @@ func (g *Game) handleInput() {
 		}
 
 	case ebiten.IsKeyPressed(ebiten.KeyControl):
-		if g.mouseMode != raycaster.MouseModeCursor {
+		if g.mouseMode != MouseModeCursor {
 			ebiten.SetCursorMode(ebiten.CursorModeVisible)
-			g.mouseMode = raycaster.MouseModeCursor
+			g.mouseMode = MouseModeCursor
 		}
 
 	case ebiten.IsKeyPressed(ebiten.KeyAlt):
-		if g.mouseMode != raycaster.MouseModeMove {
+		if g.mouseMode != MouseModeMove {
 			ebiten.SetCursorMode(ebiten.CursorModeCaptured)
-			g.mouseMode = raycaster.MouseModeMove
+			g.mouseMode = MouseModeMove
 			g.mouseX, g.mouseY = math.MinInt32, math.MinInt32
 		}
 
-	case g.mouseMode != raycaster.MouseModeLook && !g.mouseModeToggle:
+	case g.mouseMode != MouseModeLook && !g.mouseModeToggle:
 		ebiten.SetCursorMode(ebiten.CursorModeCaptured)
-		g.mouseMode = raycaster.MouseModeLook
+		g.mouseMode = MouseModeLook
 		g.mouseX, g.mouseY = math.MinInt32, math.MinInt32
 	}
 
 	switch g.mouseMode {
-	case raycaster.MouseModeCursor:
+	case MouseModeCursor:
 		g.mouseX, g.mouseY = ebiten.CursorPosition()
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 			fmt.Printf("mouse left clicked: (%v, %v)\n", g.mouseX, g.mouseY)
@@ -633,7 +641,7 @@ func (g *Game) handleInput() {
 			fmt.Printf("mouse right clicked: (%v, %v)\n", g.mouseX, g.mouseY)
 		}
 
-	case raycaster.MouseModeMove:
+	case MouseModeMove:
 		x, y := ebiten.CursorPosition()
 
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
@@ -659,7 +667,7 @@ func (g *Game) handleInput() {
 				g.Move(0.01 * float64(dy) * moveModifier)
 			}
 		}
-	case raycaster.MouseModeLook:
+	case MouseModeLook:
 		x, y := ebiten.CursorPosition()
 
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
@@ -732,7 +740,7 @@ func (g *Game) handleInput() {
 		g.Move(-0.06 * moveModifier)
 	}
 
-	if g.mouseMode == raycaster.MouseModeLook || g.mouseMode == raycaster.MouseModeMove {
+	if g.mouseMode == MouseModeLook || g.mouseMode == MouseModeMove {
 		// strafe instead of rotate
 		if rotLeft {
 			g.Strafe(-0.05 * moveModifier)
