@@ -98,6 +98,10 @@ func NewGame() *Game {
 	ebiten.SetWindowSize(g.screenWidth, g.screenHeight)
 	ebiten.SetWindowTitle("Raycaster-Go Demo")
 
+	// set target TPS
+	targetTPS := 60
+	ebiten.SetMaxTPS(targetTPS)
+
 	// use scale to keep the desired window width and height
 	g.width = int(math.Floor(float64(g.screenWidth) * g.renderScale))
 	g.height = int(math.Floor(float64(g.screenHeight) * g.renderScale))
