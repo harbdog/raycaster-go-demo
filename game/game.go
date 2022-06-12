@@ -36,8 +36,7 @@ const (
 // Game - This is the main type for your game.
 type Game struct {
 	//--create slicer and declare slices--//
-	tex    *raycaster.TextureHandler
-	slices []*image.Rectangle
+	tex *raycaster.TextureHandler
 
 	// window resolution and scaling
 	screenWidth  int
@@ -421,9 +420,9 @@ func (g *Game) addSprite(sprite *model.Sprite) {
 	g.sprites[sprite] = struct{}{}
 }
 
-func (g *Game) deleteSprite(sprite *model.Sprite) {
-	delete(g.sprites, sprite)
-}
+// func (g *Game) deleteSprite(sprite *model.Sprite) {
+// 	delete(g.sprites, sprite)
+// }
 
 func (g *Game) addProjectile(projectile *model.Projectile) {
 	g.projectiles[projectile] = struct{}{}
