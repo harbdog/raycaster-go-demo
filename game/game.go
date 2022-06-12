@@ -64,9 +64,6 @@ type Game struct {
 
 	//--array of levels, levels refer to "floors" of the world--//
 	mapObj       *model.Map
-	levels       []*raycaster.Level
-	spriteLvls   []*raycaster.Level
-	floorLvl     *raycaster.HorLevel
 	collisionMap []geom.Line
 
 	sprites     map[*model.Sprite]struct{}
@@ -100,14 +97,8 @@ func NewGame() *Game {
 
 	g.tex = raycaster.NewTextureHandler(texWidth)
 
-	//--init texture slices--//
-	g.slices = g.tex.GetSlices()
-
 	// load map
 	g.mapObj = model.NewMap()
-
-	//--inits the levels--//
-	g.levels, g.floorLvl = g.createLevels(4)
 
 	g.collisionMap = g.mapObj.GetCollisionLines(clipDistance)
 	g.worldMap = g.mapObj.GetGrid()
@@ -127,7 +118,6 @@ func NewGame() *Game {
 
 	// init the sprites
 	g.loadSprites()
-	g.spriteLvls = g.createSpriteLevels()
 
 	// init mouse movement mode
 	ebiten.SetCursorMode(ebiten.CursorModeCaptured)
@@ -137,7 +127,7 @@ func NewGame() *Game {
 	g.debouncedKeys = make(map[ebiten.Key]int, 8)
 
 	//--init camera and renderer--//
-	g.camera = raycaster.NewCamera(g.width, g.height, texWidth, g.mapObj, g.slices, g.levels, g.floorLvl, g.spriteLvls, g.tex)
+	g.camera = raycaster.NewCamera(g.width, g.height, texWidth, g.mapObj, g.tex)
 	g.camera.SetFloorTexture(getTextureFromFile("floor.png"))
 	g.camera.SetSkyTexture(getTextureFromFile("sky.png"))
 
@@ -233,11 +223,10 @@ func (g *Game) loadContent() {
 	g.tex.Textures[23] = getSpriteFromFile("red_explosion_sheet.png")
 
 	// just setting the grass texture apart from the rest since it gets special handling
-	g.floorLvl.TexRGBA = make([]*image.RGBA, 1)
 	if g.debug {
-		g.floorLvl.TexRGBA[0] = getRGBAFromFile("grass_debug.png")
+		g.tex.FloorTex = getRGBAFromFile("grass_debug.png")
 	} else {
-		g.floorLvl.TexRGBA[0] = getRGBAFromFile("grass.png")
+		g.tex.FloorTex = getRGBAFromFile("grass.png")
 	}
 }
 
@@ -434,37 +423,22 @@ func (g *Game) addSprite(sprite *model.Sprite) {
 
 func (g *Game) deleteSprite(sprite *model.Sprite) {
 	delete(g.sprites, sprite)
-
-	// TODO: refactor the need for this extra update needed when the sprite list expands/contracts
-	g.updateSpriteLevels()
 }
 
 func (g *Game) addProjectile(projectile *model.Projectile) {
 	g.projectiles[projectile] = struct{}{}
-
-	// TODO: refactor the need for this extra update needed when the projectile list expands
-	g.updateSpriteLevels()
 }
 
 func (g *Game) deleteProjectile(projectile *model.Projectile) {
 	delete(g.projectiles, projectile)
-
-	// TODO: refactor the need for this extra update needed when the projectile list contracts
-	g.updateSpriteLevels()
 }
 
 func (g *Game) addEffect(effect *model.Effect) {
 	g.effects[effect] = struct{}{}
-
-	// TODO: refactor the need for this extra update needed when the projectile list expands
-	g.updateSpriteLevels()
 }
 
 func (g *Game) deleteEffect(effect *model.Effect) {
 	delete(g.effects, effect)
-
-	// TODO: refactor the need for this extra update needed when the projectile list contracts
-	g.updateSpriteLevels()
 }
 
 // Run is the Ebiten Run loop caller
@@ -1151,40 +1125,4 @@ func (g *Game) updateSprites() {
 
 func randFloat(min, max float64) float64 {
 	return min + rand.Float64()*(max-min)
-}
-
-//returns initialised Level structs
-func (g *Game) createLevels(numLevels int) ([]*raycaster.Level, *raycaster.HorLevel) {
-	levelArr := make([]*raycaster.Level, numLevels)
-
-	for i := 0; i < numLevels; i++ {
-		levelArr[i] = new(raycaster.Level)
-		levelArr[i].Sv = raycaster.SliceView(g.width, g.height)
-		levelArr[i].Cts = make([]*image.Rectangle, g.width)
-		levelArr[i].St = make([]*color.RGBA, g.width)
-		levelArr[i].CurrTex = make([]*ebiten.Image, g.width)
-	}
-
-	horizontalLevel := new(raycaster.HorLevel)
-	horizontalLevel.Clear(g.width, g.height)
-
-	return levelArr, horizontalLevel
-}
-
-func (g *Game) createSpriteLevels() []*raycaster.Level {
-	// create empty "level" for all sprites to render using similar slice methods as walls
-	numSprites := len(g.sprites)
-
-	spriteArr := make([]*raycaster.Level, numSprites)
-
-	return spriteArr
-}
-
-func (g *Game) updateSpriteLevels() {
-	// update empty "level" for all sprites used by camera
-	// TODO: this should be refactored so to be not necessary
-	numSprites, numProjectiles, numEffects := len(g.sprites), len(g.projectiles), len(g.effects)
-
-	g.spriteLvls = make([]*raycaster.Level, numSprites+numProjectiles+numEffects)
-	g.camera.UpdateSpriteLevels(g.spriteLvls)
 }

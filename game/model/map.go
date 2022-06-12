@@ -9,7 +9,7 @@ type Map struct {
 }
 
 func (m *Map) NumLevels() int {
-	return 3
+	return 4
 }
 
 func (m *Map) Level(levelNum int) [][]int {
@@ -18,7 +18,7 @@ func (m *Map) Level(levelNum int) [][]int {
 	} else if levelNum == 1 {
 		return m.midMap
 	} else {
-		return m.upMap
+		return m.upMap // if above highest level just keep extending last one up
 	}
 }
 
