@@ -4,7 +4,8 @@ go 1.17
 
 require (
 	github.com/hajimehoshi/ebiten/v2 v2.3.2
-	github.com/harbdog/raycaster-go v0.2.3-0.20220609005918-cdd7b4bb9720
+	github.com/harbdog/raycaster-go v0.2.3-0.20220612180216-62711b6d9c36
+	github.com/jinzhu/copier v0.3.5
 	github.com/spf13/viper v1.12.0
 )
 
@@ -14,7 +15,6 @@ require (
 	github.com/gofrs/flock v0.8.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jezek/xgb v1.0.0 // indirect
-	github.com/jinzhu/copier v0.3.5 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
@@ -34,5 +34,3 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0 // indirect
 )
-
-replace github.com/harbdog/raycaster-go => ../raycaster-go
