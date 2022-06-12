@@ -109,18 +109,6 @@ func NewMap() *Map {
 	return m
 }
 
-func (m *Map) GetGrid() [][]int {
-	return m.worldMap
-}
-
-func (m *Map) GetGridUp() [][]int {
-	return m.upMap
-}
-
-func (m *Map) GetGridMid() [][]int {
-	return m.midMap
-}
-
 func (m *Map) GetCollisionLines(clipDistance float64) []geom.Line {
 	if len(m.worldMap) == 0 || len(m.worldMap[0]) == 0 {
 		return []geom.Line{}

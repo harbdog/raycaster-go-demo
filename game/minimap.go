@@ -12,7 +12,8 @@ func (g *Game) miniMap() *image.RGBA {
 	m := image.NewRGBA(image.Rect(0, 0, g.mapWidth, g.mapHeight))
 
 	// wall/world positions
-	for x, row := range g.worldMap {
+	worldMap := g.mapObj.Level(0)
+	for x, row := range worldMap {
 		for y := range row {
 			c := g.getMapColor(x, y)
 			if c.A == 255 {
@@ -65,7 +66,8 @@ func (g *Game) miniMap() *image.RGBA {
 }
 
 func (g *Game) getMapColor(x, y int) color.RGBA {
-	switch g.worldMap[x][y] {
+	worldMap := g.mapObj.Level(0)
+	switch worldMap[x][y] {
 	case 0:
 		return color.RGBA{43, 30, 24, 255}
 	case 1:
