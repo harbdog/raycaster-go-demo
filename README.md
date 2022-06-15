@@ -2,6 +2,8 @@
 
 Demo project for using [raycaster-go](https://github.com/harbdog/raycaster-go) engine as a module.
 
+To see it in action, see the [demo video on YouTube](https://www.youtube.com/watch?v=WKVsmkmYN24).
+
 ![Screenshot](docs/images/screenshot.jpg?raw=true)
 
 ## How to run
