@@ -167,7 +167,7 @@ func (g *Game) initConfig() {
 	viper.SetDefault("screen.renderScale", 0.75)
 
 	err := viper.ReadInConfig()
-	if err != nil {
+	if err != nil && g.debug {
 		log.Print(err)
 	}
 
