@@ -141,9 +141,9 @@ func (g *Game) loadSprites() {
 	sorcScale := 1.25
 	sorcVoffset := -76.0
 	sorcCollisionRadius := 25.0 / texWidth
-	sorc := model.NewAnimatedSprite(5.5, 8.0, sorcScale, 5, g.tex.textures[15], yellow, 10, 1, texWidth, sorcVoffset, sorcCollisionRadius)
+	sorc := model.NewAnimatedSprite(22.5, 11.75, sorcScale, 5, g.tex.textures[15], yellow, 10, 1, texWidth, sorcVoffset, sorcCollisionRadius)
 	// give sprite a sample velocity for movement
-	sorc.Angle = geom.Radians(270)
+	sorc.Angle = geom.Radians(180)
 	sorc.Velocity = 0.02
 	g.addSprite(sorc)
 
