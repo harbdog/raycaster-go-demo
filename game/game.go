@@ -107,8 +107,8 @@ func NewGame() *Game {
 	g.crosshairs = model.NewCrosshairs(1, 1, 2.0, g.tex.textures[16], 8, 8, 55, 57)
 
 	// init player model
-	angleDegrees := 90.0
-	g.player = model.NewPlayer(9.5, 3.5, geom.Radians(angleDegrees), 0)
+	angleDegrees := 60.0
+	g.player = model.NewPlayer(8.5, 3.5, geom.Radians(angleDegrees), 0)
 	g.player.CollisionRadius = clipDistance
 
 	// init the sprites

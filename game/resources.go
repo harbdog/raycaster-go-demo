@@ -24,6 +24,7 @@ func (g *Game) loadContent() {
 	g.tex.textures[2] = getTextureFromFile("right_bot_house.png")
 	g.tex.textures[3] = getTextureFromFile("left_top_house.png")
 	g.tex.textures[4] = getTextureFromFile("right_top_house.png")
+	g.tex.textures[5] = getTextureFromFile("ebitengine_splash.png")
 
 	// separating sprites out a bit from wall textures
 	g.tex.textures[9] = getSpriteFromFile("tree_09.png")
@@ -161,7 +162,7 @@ func (g *Game) loadSprites() {
 	walkerScale := 0.75
 	walkerVoffset := 76.0
 	walkerCollisionRadius := 30.0 / texWidth
-	walker := model.NewAnimatedSprite(9.5, 6.0, walkerScale, 10, g.tex.textures[19], yellow, 4, 8, texWidth, walkerVoffset, walkerCollisionRadius)
+	walker := model.NewAnimatedSprite(7.5, 6.0, walkerScale, 10, g.tex.textures[19], yellow, 4, 8, texWidth, walkerVoffset, walkerCollisionRadius)
 	walker.SetAnimationReversed(true) // this sprite sheet has reversed animation frame order
 	walker.SetTextureFacingMap(walkerTexFacingMap)
 	// give sprite a sample velocity for movement

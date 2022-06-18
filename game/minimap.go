@@ -76,6 +76,9 @@ func (g *Game) getMapColor(x, y int) color.RGBA {
 		return color.RGBA{51, 32, 0, 196}
 	case 3:
 		return color.RGBA{56, 36, 0, 196}
+	case 6:
+		// ebitengine splash logo color!
+		return color.RGBA{219, 86, 32, 255}
 	default:
 		return color.RGBA{255, 194, 32, 255}
 	}

@@ -43,9 +43,9 @@ func (t *TextureHandler) TextureAt(x, y, levelNum, side int) *ebiten.Image {
 		texNum = mapLevel[x][y] - 1 // 1 subtracted from it so that texture 0 can be used
 	}
 
-	//--some supid hacks to make the houses render correctly--//
-	// this corrects textures on two sides of house since the textures are not symmetrical
 	if side == 0 {
+		//--some supid hacks to make the houses render correctly--//
+		// this corrects textures on two sides of house since the textures are not symmetrical
 		if texNum == 3 {
 			texNum = 4
 		} else if texNum == 4 {
@@ -56,6 +56,11 @@ func (t *TextureHandler) TextureAt(x, y, levelNum, side int) *ebiten.Image {
 			texNum = 4
 		} else if texNum == 2 {
 			texNum = 3
+		}
+
+		// make the ebitengine splash only show on one side
+		if texNum == 5 {
+			texNum = 0
 		}
 	}
 
