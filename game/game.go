@@ -18,6 +18,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/harbdog/raycaster-go"
 	"github.com/harbdog/raycaster-go/geom"
 	"github.com/spf13/viper"
@@ -63,9 +64,6 @@ type Game struct {
 	mouseMode       MouseMode
 	mouseModeToggle bool
 	mouseX, mouseY  int
-
-	// keep track of certain key presses for debounce protection
-	debouncedKeys map[ebiten.Key]int
 
 	crosshairs *model.Crosshairs
 
@@ -134,8 +132,6 @@ func NewGame() *Game {
 	ebiten.SetCursorMode(ebiten.CursorModeCaptured)
 	g.mouseMode = MouseModeMove
 	g.mouseX, g.mouseY = math.MinInt32, math.MinInt32
-
-	g.debouncedKeys = make(map[ebiten.Key]int, 8)
 
 	//--init camera and renderer--//
 	g.camera = raycaster.NewCamera(g.width, g.height, texWidth, g.mapObj, g.tex)
@@ -561,30 +557,6 @@ func (g *Game) Update() error {
 	return nil
 }
 
-func (g *Game) debounceInput(key ebiten.Key, duration int) {
-	g.debouncedKeys[key] = duration
-}
-
-func (g *Game) updatedDebounces() {
-	for key, duration := range g.debouncedKeys {
-		duration--
-		g.debouncedKeys[key] = duration
-
-		if duration <= 0 {
-			delete(g.debouncedKeys, key)
-		}
-	}
-}
-
-func (g *Game) isDebouncedInput(key ebiten.Key) bool {
-	if value, ok := g.debouncedKeys[key]; ok {
-		if value > 0 {
-			return true
-		}
-	}
-	return false
-}
-
 func (g *Game) handleInput() {
 	forward := false
 	backward := false
@@ -596,21 +568,14 @@ func (g *Game) handleInput() {
 		moveModifier = 2.0
 	}
 
-	// update any currently debounced inputs
-	g.updatedDebounces()
-
 	switch {
 	case ebiten.IsKeyPressed(ebiten.KeyEscape):
 		if g.mouseMode != MouseModeCursor {
 			ebiten.SetCursorMode(ebiten.CursorModeVisible)
 			g.mouseMode = MouseModeCursor
 			g.mouseModeToggle = true
-			g.debounceInput(ebiten.KeyEscape, 5)
-		} else if g.isDebouncedInput(ebiten.KeyEscape) {
-			// continue to debounce key since it is still being held
-			g.debounceInput(ebiten.KeyEscape, 5)
-		} else {
-			// debounce period over, it has been pressed again after some pause
+		} else if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+			// it has been pressed again after releasing it at some point
 			g.mouseModeToggle = false
 		}
 
