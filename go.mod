@@ -4,8 +4,9 @@ go 1.17
 
 require (
 	github.com/gabstv/ebiten-imgui v0.5.0
-	github.com/hajimehoshi/ebiten/v2 v2.3.2
+	github.com/hajimehoshi/ebiten/v2 v2.3.4
 	github.com/harbdog/raycaster-go v1.0.1
+	github.com/inkyblackness/imgui-go/v4 v4.4.0
 	github.com/jinzhu/copier v0.3.5
 	github.com/spf13/viper v1.12.0
 )
@@ -15,8 +16,6 @@ require (
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20220320163800-277f93cfa958 // indirect
 	github.com/gofrs/flock v0.8.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/inkyblackness/imgui-go v1.12.0 // indirect
-	github.com/inkyblackness/imgui-go/v4 v4.4.0 // indirect
 	github.com/jezek/xgb v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
@@ -37,3 +36,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0 // indirect
 )
+
+replace github.com/harbdog/raycaster-go => ../raycaster-go

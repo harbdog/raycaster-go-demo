@@ -30,7 +30,7 @@ const (
 
 // Game - This is the main type for your game.
 type Game struct {
-	menu Menu
+	menu DemoMenu
 
 	//--create slicer and declare slices--//
 	tex *TextureHandler
@@ -39,6 +39,8 @@ type Game struct {
 	screenWidth  int
 	screenHeight int
 	renderScale  float64
+	fullscreen   bool
+	vsync        bool
 
 	//--viewport width / height--//
 	width  int
@@ -49,9 +51,8 @@ type Game struct {
 	//--define camera and renderer--//
 	camera *raycaster.Camera
 
-	mouseMode       MouseMode
-	mouseModeToggle bool
-	mouseX, mouseY  int
+	mouseMode      MouseMode
+	mouseX, mouseY int
 
 	crosshairs *model.Crosshairs
 
@@ -88,8 +89,9 @@ func NewGame() *Game {
 	ebiten.SetMaxTPS(targetTPS)
 
 	// use scale to keep the desired window width and height
-	g.width = int(math.Floor(float64(g.screenWidth) * g.renderScale))
-	g.height = int(math.Floor(float64(g.screenHeight) * g.renderScale))
+	g.setRenderScale(g.renderScale)
+	g.setFullscreen(false)
+	g.setVsyncEnabled(false)
 
 	// load map
 	g.mapObj = model.NewMap()
@@ -130,7 +132,7 @@ func NewGame() *Game {
 	g.updatePlayerCamera(true)
 
 	// init menu system
-	g.menu = MainMenu()
+	g.menu = mainMenu()
 
 	return g
 }
@@ -151,7 +153,7 @@ func (g *Game) initConfig() {
 	viper.SetDefault("debug", false)
 	viper.SetDefault("screen.width", 1024)
 	viper.SetDefault("screen.height", 768)
-	viper.SetDefault("screen.renderScale", 0.75)
+	viper.SetDefault("screen.renderScale", 1.0)
 
 	err := viper.ReadInConfig()
 	if err != nil && g.debug {
@@ -207,7 +209,7 @@ func (g *Game) Run() {
 // If you don't have to adjust the screen size with the outside size, just return a fixed size.
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	w, h := int(float64(g.screenWidth)*g.renderScale), int(float64(g.screenHeight)*g.renderScale)
-	g.menu.Layout(w, h)
+	g.menu.layout(w, h)
 	return int(w), int(h)
 }
 
@@ -225,7 +227,7 @@ func (g *Game) Update() error {
 	g.updatePlayerCamera(false)
 
 	// update the menu (if active)
-	g.menu.Update()
+	g.menu.update(g)
 
 	return nil
 }
@@ -305,7 +307,39 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 
 	// draw menu (if active)
-	g.menu.Draw(screen)
+	g.menu.draw(screen)
+}
+
+func (g *Game) setFullscreen(fullscreen bool) {
+	g.fullscreen = fullscreen
+	ebiten.SetFullscreen(fullscreen)
+}
+
+func (g *Game) setRenderScale(renderScale float64) {
+	if ebiten.IsFullscreen() {
+		eW, eH := ebiten.ScreenSizeInFullscreen()
+		fmt.Printf("fullscreenSize: %vx%v\n", eW, eH)
+	} else {
+		eW, eH := ebiten.WindowSize()
+		fmt.Printf("windowSize: %vx%v\n", eW, eH)
+	}
+
+	g.renderScale = renderScale
+	g.width = int(math.Floor(float64(g.screenWidth) * g.renderScale))
+	g.height = int(math.Floor(float64(g.screenHeight) * g.renderScale))
+	if g.camera != nil {
+		fmt.Printf("\tcameraViewSize: %vx%v\n", g.width, g.height)
+		g.camera.SetViewSize(g.width, g.height)
+	}
+}
+
+func (g *Game) setVsyncEnabled(enableVsync bool) {
+	g.vsync = enableVsync
+	if enableVsync {
+		ebiten.SetFPSMode(ebiten.FPSModeVsyncOn)
+	} else {
+		ebiten.SetFPSMode(ebiten.FPSModeVsyncOffMaximum)
+	}
 }
 
 // Move player by move speed in the forward/backward direction
@@ -515,4 +549,9 @@ func (g *Game) updateSprites() {
 
 func randFloat(min, max float64) float64 {
 	return min + rand.Float64()*(max-min)
+}
+
+func exit(rc int) {
+	// TODO: any cleanup?
+	os.Exit(rc)
 }
