@@ -30,6 +30,8 @@ const (
 
 // Game - This is the main type for your game.
 type Game struct {
+	menu Menu
+
 	//--create slicer and declare slices--//
 	tex *TextureHandler
 
@@ -127,6 +129,9 @@ func NewGame() *Game {
 	// initialize camera to player position
 	g.updatePlayerCamera(true)
 
+	// init menu system
+	g.menu = MainMenu()
+
 	return g
 }
 
@@ -201,7 +206,28 @@ func (g *Game) Run() {
 // Layout takes the outside size (e.g., the window size) and returns the (logical) screen size.
 // If you don't have to adjust the screen size with the outside size, just return a fixed size.
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return int(float64(g.screenWidth) * g.renderScale), int(float64(g.screenHeight) * g.renderScale)
+	w, h := int(float64(g.screenWidth)*g.renderScale), int(float64(g.screenHeight)*g.renderScale)
+	g.menu.Layout(w, h)
+	return int(w), int(h)
+}
+
+// Update - Allows the game to run logic such as updating the world, gathering input, and playing audio.
+// Update is called every tick (1/60 [s] by default).
+func (g *Game) Update() error {
+	// Perform logical updates
+	g.updateProjectiles()
+	g.updateSprites()
+
+	// handle input
+	g.handleInput()
+
+	// handle player camera movement
+	g.updatePlayerCamera(false)
+
+	// update the menu (if active)
+	g.menu.Update()
+
+	return nil
 }
 
 // Draw draws the game screen.
@@ -277,22 +303,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			g.crosshairs.Update()
 		}
 	}
-}
 
-// Update - Allows the game to run logic such as updating the world, gathering input, and playing audio.
-// Update is called every tick (1/60 [s] by default).
-func (g *Game) Update() error {
-	// Perform logical updates
-	g.updateProjectiles()
-	g.updateSprites()
-
-	// handle input
-	g.handleInput()
-
-	// handle player camera movement
-	g.updatePlayerCamera(false)
-
-	return nil
+	// draw menu (if active)
+	g.menu.Draw(screen)
 }
 
 // Move player by move speed in the forward/backward direction
