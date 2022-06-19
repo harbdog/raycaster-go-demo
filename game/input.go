@@ -28,16 +28,11 @@ func (g *Game) handleInput() {
 	}
 
 	switch {
-	case ebiten.IsKeyPressed(ebiten.KeyEscape):
-		if g.mouseMode != MouseModeCursor {
-			ebiten.SetCursorMode(ebiten.CursorModeVisible)
-			g.mouseMode = MouseModeCursor
-			g.mouseModeToggle = true
-			g.menu.active = true
-		} else if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
-			// it has been pressed again after releasing it at some point
-			g.mouseModeToggle = false
-			g.menu.active = false
+	case inpututil.IsKeyJustPressed(ebiten.KeyEscape):
+		if g.menu.active {
+			g.closeMenu()
+		} else {
+			g.openMenu()
 		}
 
 	case ebiten.IsKeyPressed(ebiten.KeyControl):
@@ -53,7 +48,7 @@ func (g *Game) handleInput() {
 			g.mouseX, g.mouseY = math.MinInt32, math.MinInt32
 		}
 
-	case g.mouseMode != MouseModeLook && !g.mouseModeToggle:
+	case !g.menu.active && g.mouseMode != MouseModeLook:
 		ebiten.SetCursorMode(ebiten.CursorModeCaptured)
 		g.mouseMode = MouseModeLook
 		g.mouseX, g.mouseY = math.MinInt32, math.MinInt32
