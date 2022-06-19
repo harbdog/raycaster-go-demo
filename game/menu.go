@@ -30,11 +30,12 @@ func (m *Menu) Update() {
 
 	m.mgr.Update(1.0 / float32(ebiten.MaxTPS()))
 
-	m.mgr.SetText("Menu")
 	m.mgr.BeginFrame()
+	imgui.Begin("Menu")
 	{
 		imgui.Text("Hello, world!")
 	}
+	imgui.End()
 	m.mgr.EndFrame()
 }
 
