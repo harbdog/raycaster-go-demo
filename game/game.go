@@ -227,20 +227,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// Update camera (calculate raycast)
 	g.camera.Update(raycastSprites)
 
-	// Render to screen
+	// Render raycast to screen
 	g.camera.Draw(screen)
-
-	// draw minimap
-	mm := g.miniMap()
-	mmImg := ebiten.NewImageFromImage(mm)
-	if mmImg != nil {
-		op := &ebiten.DrawImageOptions{}
-		op.Filter = ebiten.FilterNearest
-
-		op.GeoM.Scale(5.0, 5.0)
-		op.GeoM.Translate(0, 50)
-		screen.DrawImage(mmImg, op)
-	}
 
 	// draw equipped weapon
 	if g.player.Weapon != nil {
@@ -257,6 +245,18 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		screen.DrawImage(w.Texture(), op)
 
 		w.Update()
+	}
+
+	// draw minimap
+	mm := g.miniMap()
+	mmImg := ebiten.NewImageFromImage(mm)
+	if mmImg != nil {
+		op := &ebiten.DrawImageOptions{}
+		op.Filter = ebiten.FilterNearest
+
+		op.GeoM.Scale(5.0, 5.0)
+		op.GeoM.Translate(0, 50)
+		screen.DrawImage(mmImg, op)
 	}
 
 	// draw crosshairs
