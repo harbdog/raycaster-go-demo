@@ -84,14 +84,13 @@ func NewGame() *Game {
 	ebiten.SetWindowSize(g.screenWidth, g.screenHeight)
 	ebiten.SetWindowTitle("Raycaster-Go Demo")
 
-	// set target TPS
-	targetTPS := 60
-	ebiten.SetMaxTPS(targetTPS)
+	// default TPS is 60
+	// ebiten.SetMaxTPS(60)
 
 	// use scale to keep the desired window width and height
 	g.setRenderScale(g.renderScale)
 	g.setFullscreen(false)
-	g.setVsyncEnabled(false)
+	g.setVsyncEnabled(true)
 
 	// load map
 	g.mapObj = model.NewMap()
@@ -313,17 +312,17 @@ func (g *Game) Draw(screen *ebiten.Image) {
 func (g *Game) setFullscreen(fullscreen bool) {
 	g.fullscreen = fullscreen
 	ebiten.SetFullscreen(fullscreen)
+
+	if fullscreen {
+		g.screenWidth, g.screenHeight = ebiten.ScreenSizeInFullscreen()
+	} else {
+		g.screenWidth, g.screenHeight = ebiten.WindowSize()
+	}
+
+	g.setRenderScale(g.renderScale)
 }
 
 func (g *Game) setRenderScale(renderScale float64) {
-	if ebiten.IsFullscreen() {
-		eW, eH := ebiten.ScreenSizeInFullscreen()
-		fmt.Printf("fullscreenSize: %vx%v\n", eW, eH)
-	} else {
-		eW, eH := ebiten.WindowSize()
-		fmt.Printf("windowSize: %vx%v\n", eW, eH)
-	}
-
 	g.renderScale = renderScale
 	g.width = int(math.Floor(float64(g.screenWidth) * g.renderScale))
 	g.height = int(math.Floor(float64(g.screenHeight) * g.renderScale))
