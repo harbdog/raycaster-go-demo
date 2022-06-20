@@ -41,6 +41,7 @@ type Game struct {
 	renderScale  float64
 	fullscreen   bool
 	vsync        bool
+	fovDegrees   float64
 
 	//--viewport width / height--//
 	width  int
@@ -129,6 +130,7 @@ func NewGame() *Game {
 
 	// initialize camera to player position
 	g.updatePlayerCamera(true)
+	g.fovDegrees = g.camera.FovAngle() // TODO: store and load from config file
 
 	// init menu system
 	g.menu = mainMenu()
@@ -339,6 +341,11 @@ func (g *Game) setVsyncEnabled(enableVsync bool) {
 	} else {
 		ebiten.SetFPSMode(ebiten.FPSModeVsyncOffMaximum)
 	}
+}
+
+func (g *Game) setFovAngle(fovDegrees float64) {
+	g.fovDegrees = fovDegrees
+	g.camera.SetFovAngle(fovDegrees)
 }
 
 // Move player by move speed in the forward/backward direction

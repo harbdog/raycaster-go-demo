@@ -14,6 +14,7 @@ type DemoMenu struct {
 
 	// held vars that should not get updated in real-time
 	newRenderScale float32
+	newFovDegrees  float32
 }
 
 func mainMenu() DemoMenu {
@@ -31,6 +32,7 @@ func (g *Game) openMenu() {
 
 	// setup initial values for held vars that should not get updated in real-time
 	g.menu.newRenderScale = float32(g.renderScale)
+	g.menu.newFovDegrees = float32(g.fovDegrees)
 }
 
 func (g *Game) closeMenu() {
@@ -76,6 +78,10 @@ func (m *DemoMenu) update(g *Game) {
 
 		if imgui.Checkbox("Use VSync", &g.vsync) {
 			g.setVsyncEnabled(g.vsync)
+		}
+
+		if imgui.SliderFloatV("FOV", &m.newFovDegrees, 40, 140, "%.0f", imgui.SliderFlagsNone) {
+			g.setFovAngle(float64(m.newFovDegrees))
 		}
 	}
 	imgui.End()
