@@ -1,7 +1,7 @@
 package game
 
 import (
-	"math"
+	"fmt"
 
 	"github.com/gabstv/ebiten-imgui/renderer"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -53,23 +53,31 @@ func (m *DemoMenu) update(g *Game) {
 	m.mgr.BeginFrame()
 	imgui.Begin("Demo Menu")
 	{
-		if imgui.Button("Resume") {
-			g.closeMenu()
-		}
-		imgui.SameLineV(0, 50)
-		if imgui.Button("Exit") {
-			exit(0)
-		}
+		// Render scaling: +/- buttons to constrict values (0.25 <= s <= 1.0 in 0.25 increments only)
+		{
+			imgui.Text(fmt.Sprintf("Render Scaling: %0.2f", m.newRenderScale))
+			imgui.SameLine()
 
-		if imgui.SliderFloatV("Render Scaling", &m.newRenderScale, 0.25, 1.0, "%.2f", imgui.SliderFlagsNone) {
-			// only allow values of 0.25, 0.5, 0.75, 1.0
-			scaleMod := math.Mod(float64(m.newRenderScale), 0.25)
-			if scaleMod != 0 {
-				m.newRenderScale = float32(math.Round(float64(m.newRenderScale)/0.25) * 0.25)
+			if imgui.Button("-") {
+				m.newRenderScale -= 0.25
+				if m.newRenderScale < 0.25 {
+					m.newRenderScale = 0.25
+				}
 			}
-		}
-		if imgui.IsItemDeactivatedAfterEdit() {
-			g.setRenderScale(float64(m.newRenderScale))
+			if imgui.IsItemDeactivated() {
+				g.setRenderScale(float64(m.newRenderScale))
+			}
+
+			imgui.SameLine()
+			if imgui.Button("+") {
+				m.newRenderScale += 0.25
+				if m.newRenderScale > 1.0 {
+					m.newRenderScale = 1.0
+				}
+			}
+			if imgui.IsItemDeactivated() {
+				g.setRenderScale(float64(m.newRenderScale))
+			}
 		}
 
 		if imgui.Checkbox("Fullscreen", &g.fullscreen) {
@@ -82,6 +90,19 @@ func (m *DemoMenu) update(g *Game) {
 
 		if imgui.SliderFloatV("FOV", &m.newFovDegrees, 40, 140, "%.0f", imgui.SliderFlagsNone) {
 			g.setFovAngle(float64(m.newFovDegrees))
+		}
+
+		// Just some extra spacing
+		imgui.Dummy(imgui.Vec2{X: 10, Y: 10})
+		imgui.Separator()
+		{
+			if imgui.ButtonV("Resume", imgui.Vec2{X: 100, Y: 25}) {
+				g.closeMenu()
+			}
+			imgui.SameLineV(0, imgui.WindowWidth()-200)
+			if imgui.ButtonV("Exit", imgui.Vec2{X: 100, Y: 25}) {
+				exit(0)
+			}
 		}
 	}
 	imgui.End()
