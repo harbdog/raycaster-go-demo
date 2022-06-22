@@ -82,13 +82,13 @@ func NewGame() *Game {
 
 	g.initConfig()
 
-	ebiten.SetWindowSize(g.screenWidth, g.screenHeight)
 	ebiten.SetWindowTitle("Raycaster-Go Demo")
 
 	// default TPS is 60
 	// ebiten.SetMaxTPS(60)
 
 	// use scale to keep the desired window width and height
+	g.setResolution(g.screenWidth, g.screenHeight)
 	g.setRenderScale(g.renderScale)
 	g.setFullscreen(false)
 	g.setVsyncEnabled(true)
@@ -314,13 +314,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 func (g *Game) setFullscreen(fullscreen bool) {
 	g.fullscreen = fullscreen
 	ebiten.SetFullscreen(fullscreen)
+}
 
-	if fullscreen {
-		g.screenWidth, g.screenHeight = ebiten.ScreenSizeInFullscreen()
-	} else {
-		g.screenWidth, g.screenHeight = ebiten.WindowSize()
-	}
-
+func (g *Game) setResolution(screenWidth, screenHeight int) {
+	g.screenWidth, g.screenHeight = screenWidth, screenHeight
+	ebiten.SetWindowSize(screenWidth, screenHeight)
 	g.setRenderScale(g.renderScale)
 }
 
@@ -329,7 +327,6 @@ func (g *Game) setRenderScale(renderScale float64) {
 	g.width = int(math.Floor(float64(g.screenWidth) * g.renderScale))
 	g.height = int(math.Floor(float64(g.screenHeight) * g.renderScale))
 	if g.camera != nil {
-		fmt.Printf("\tcameraViewSize: %vx%v\n", g.width, g.height)
 		g.camera.SetViewSize(g.width, g.height)
 	}
 }

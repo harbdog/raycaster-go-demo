@@ -13,8 +13,10 @@ type DemoMenu struct {
 	active bool
 
 	// held vars that should not get updated in real-time
-	newRenderScale float32
-	newFovDegrees  float32
+	newRenderWidth  int32
+	newRenderHeight int32
+	newRenderScale  float32
+	newFovDegrees   float32
 }
 
 func mainMenu() DemoMenu {
@@ -31,6 +33,8 @@ func (g *Game) openMenu() {
 	ebiten.SetCursorMode(ebiten.CursorModeVisible)
 
 	// setup initial values for held vars that should not get updated in real-time
+	g.menu.newRenderWidth = int32(g.screenWidth)
+	g.menu.newRenderHeight = int32(g.screenHeight)
 	g.menu.newRenderScale = float32(g.renderScale)
 	g.menu.newFovDegrees = float32(g.fovDegrees)
 }
@@ -53,6 +57,21 @@ func (m *DemoMenu) update(g *Game) {
 	m.mgr.BeginFrame()
 	imgui.Begin("Demo Menu")
 	{
+		// Set resolution by using int input fields and button to set it
+		{
+			imgui.Text("Resolution")
+
+			imgui.InputInt("Width", &m.newRenderWidth)
+
+			imgui.InputInt("Height", &m.newRenderHeight)
+
+			imgui.Indent()
+			if imgui.Button("Apply") {
+				g.setResolution(int(m.newRenderWidth), int(m.newRenderHeight))
+			}
+			imgui.Unindent()
+		}
+
 		// Render scaling: +/- buttons to constrict values (0.25 <= s <= 1.0 in 0.25 increments only)
 		{
 			imgui.Text(fmt.Sprintf("Render Scaling: %0.2f", m.newRenderScale))
@@ -63,8 +82,6 @@ func (m *DemoMenu) update(g *Game) {
 				if m.newRenderScale < 0.25 {
 					m.newRenderScale = 0.25
 				}
-			}
-			if imgui.IsItemDeactivated() {
 				g.setRenderScale(float64(m.newRenderScale))
 			}
 
@@ -74,8 +91,6 @@ func (m *DemoMenu) update(g *Game) {
 				if m.newRenderScale > 1.0 {
 					m.newRenderScale = 1.0
 				}
-			}
-			if imgui.IsItemDeactivated() {
 				g.setRenderScale(float64(m.newRenderScale))
 			}
 		}
