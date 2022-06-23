@@ -72,6 +72,12 @@ func (g *Game) handleInput() {
 			g.fireWeapon()
 		}
 
+		isStrafeMove := false
+		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonRight) {
+			// hold right click in this mode to strafe instead of rotate with mouse X axis
+			isStrafeMove = true
+		}
+
 		switch {
 		case g.mouseX == math.MinInt32 && g.mouseY == math.MinInt32:
 			// initialize first position to establish delta
@@ -84,7 +90,11 @@ func (g *Game) handleInput() {
 			g.mouseX, g.mouseY = x, y
 
 			if dx != 0 {
-				g.Rotate(0.005 * float64(dx) * moveModifier)
+				if isStrafeMove {
+					g.Strafe(-0.01 * float64(dx) * moveModifier)
+				} else {
+					g.Rotate(0.005 * float64(dx) * moveModifier)
+				}
 			}
 
 			if dy != 0 {
@@ -96,6 +106,16 @@ func (g *Game) handleInput() {
 
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 			g.fireWeapon()
+		}
+
+		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonRight) {
+			// hold right click to zoom view in this mode
+			if g.camera.FovDepth() != g.zoomFovDepth {
+				g.camera.SetFovAngle(g.zoomFovDegrees, g.zoomFovDepth)
+			}
+		} else if g.camera.FovDepth() == g.zoomFovDepth {
+			// unzoom
+			g.camera.SetFovAngle(g.fovDegrees, 1.0)
 		}
 
 		switch {

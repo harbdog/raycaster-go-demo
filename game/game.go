@@ -42,6 +42,7 @@ type Game struct {
 	fullscreen   bool
 	vsync        bool
 	fovDegrees   float64
+	fovDepth     float64
 
 	//--viewport width / height--//
 	width  int
@@ -56,6 +57,10 @@ type Game struct {
 	mouseX, mouseY int
 
 	crosshairs *model.Crosshairs
+
+	// zoom settings
+	zoomFovDegrees float64
+	zoomFovDepth   float64
 
 	//--array of levels, levels refer to "floors" of the world--//
 	mapObj       *model.Map
@@ -131,6 +136,10 @@ func NewGame() *Game {
 	// initialize camera to player position
 	g.updatePlayerCamera(true)
 	g.fovDegrees = g.camera.FovAngle() // TODO: store and load from config file
+	g.fovDepth = g.camera.FovDepth()
+
+	g.zoomFovDepth = 2.0
+	g.zoomFovDegrees = g.fovDegrees / g.zoomFovDepth
 
 	// init menu system
 	g.menu = mainMenu()
@@ -342,7 +351,7 @@ func (g *Game) setVsyncEnabled(enableVsync bool) {
 
 func (g *Game) setFovAngle(fovDegrees float64) {
 	g.fovDegrees = fovDegrees
-	g.camera.SetFovAngle(fovDegrees)
+	g.camera.SetFovAngle(fovDegrees, 1.0)
 }
 
 // Move player by move speed in the forward/backward direction
