@@ -28,6 +28,7 @@ func mainMenu() DemoMenu {
 }
 
 func (g *Game) openMenu() {
+	g.paused = true
 	g.menu.active = true
 	g.mouseMode = MouseModeCursor
 	ebiten.SetCursorMode(ebiten.CursorModeVisible)
@@ -40,6 +41,7 @@ func (g *Game) openMenu() {
 }
 
 func (g *Game) closeMenu() {
+	g.paused = false
 	g.menu.active = false
 }
 

@@ -30,7 +30,8 @@ const (
 
 // Game - This is the main type for your game.
 type Game struct {
-	menu DemoMenu
+	menu   DemoMenu
+	paused bool
 
 	//--create slicer and declare slices--//
 	tex *TextureHandler
@@ -210,6 +211,8 @@ func (g *Game) Run() {
 		ebiten.SetFullscreen(true)
 	}
 
+	g.paused = false
+
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}
@@ -226,15 +229,17 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 // Update - Allows the game to run logic such as updating the world, gathering input, and playing audio.
 // Update is called every tick (1/60 [s] by default).
 func (g *Game) Update() error {
-	// Perform logical updates
-	g.updateProjectiles()
-	g.updateSprites()
-
-	// handle input
+	// handle input (when paused making sure only to allow input for closing menu so it can be unpaused)
 	g.handleInput()
 
-	// handle player camera movement
-	g.updatePlayerCamera(false)
+	if !g.paused {
+		// Perform logical updates
+		g.updateProjectiles()
+		g.updateSprites()
+
+		// handle player camera movement
+		g.updatePlayerCamera(false)
+	}
 
 	// update the menu (if active)
 	g.menu.update(g)

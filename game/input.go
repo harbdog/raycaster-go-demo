@@ -17,6 +17,19 @@ const (
 )
 
 func (g *Game) handleInput() {
+	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+		if g.menu.active {
+			g.closeMenu()
+		} else {
+			g.openMenu()
+		}
+	}
+
+	if g.paused {
+		// currently only paused when menu is active, one could consider other pauses not the subject of this demo
+		return
+	}
+
 	forward := false
 	backward := false
 	rotLeft := false
@@ -28,13 +41,6 @@ func (g *Game) handleInput() {
 	}
 
 	switch {
-	case inpututil.IsKeyJustPressed(ebiten.KeyEscape):
-		if g.menu.active {
-			g.closeMenu()
-		} else {
-			g.openMenu()
-		}
-
 	case ebiten.IsKeyPressed(ebiten.KeyControl):
 		if g.mouseMode != MouseModeCursor {
 			ebiten.SetCursorMode(ebiten.CursorModeVisible)
