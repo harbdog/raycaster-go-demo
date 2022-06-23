@@ -59,16 +59,21 @@ func (m *DemoMenu) update(g *Game) {
 	{
 		// Set resolution by using int input fields and button to set it
 		{
-			imgui.Text("Resolution")
-
-			imgui.InputInt("Width", &m.newRenderWidth)
-
-			imgui.InputInt("Height", &m.newRenderHeight)
+			imgui.Text("Resolution:")
 
 			imgui.Indent()
+			imgui.Text(" Width")
+			imgui.SameLine()
+			imgui.InputInt("##renderWidth", &m.newRenderWidth)
+
+			imgui.Text("Height")
+			imgui.SameLine()
+			imgui.InputInt("##renderHeight", &m.newRenderHeight)
+
 			if imgui.Button("Apply") {
 				g.setResolution(int(m.newRenderWidth), int(m.newRenderHeight))
 			}
+
 			imgui.Unindent()
 		}
 
