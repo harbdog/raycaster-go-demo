@@ -102,6 +102,10 @@ func (m *DemoMenu) update(g *Game) {
 			}
 		}
 
+		if imgui.SliderFloatV("FOV", &m.newFovDegrees, 40, 140, "%.0f", imgui.SliderFlagsNone) {
+			g.setFovAngle(float64(m.newFovDegrees))
+		}
+
 		if imgui.Checkbox("Fullscreen", &g.fullscreen) {
 			g.setFullscreen(g.fullscreen)
 		}
@@ -110,9 +114,7 @@ func (m *DemoMenu) update(g *Game) {
 			g.setVsyncEnabled(g.vsync)
 		}
 
-		if imgui.SliderFloatV("FOV", &m.newFovDegrees, 40, 140, "%.0f", imgui.SliderFlagsNone) {
-			g.setFovAngle(float64(m.newFovDegrees))
-		}
+		imgui.Checkbox("Floor Texturing", &g.tex.renderFloorTex)
 
 		// Just some extra spacing
 		imgui.Dummy(imgui.Vec2{X: 10, Y: 10})

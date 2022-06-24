@@ -9,15 +9,17 @@ import (
 )
 
 type TextureHandler struct {
-	mapObj   *model.Map
-	textures []*ebiten.Image
-	floorTex *image.RGBA
+	mapObj         *model.Map
+	textures       []*ebiten.Image
+	floorTex       *image.RGBA
+	renderFloorTex bool
 }
 
 func NewTextureHandler(mapObj *model.Map, textureCapacity int) *TextureHandler {
 	t := &TextureHandler{
-		mapObj:   mapObj,
-		textures: make([]*ebiten.Image, textureCapacity),
+		mapObj:         mapObj,
+		textures:       make([]*ebiten.Image, textureCapacity),
+		renderFloorTex: true,
 	}
 	return t
 }
@@ -71,5 +73,8 @@ func (t *TextureHandler) TextureAt(x, y, levelNum, side int) *ebiten.Image {
 }
 
 func (t *TextureHandler) FloorTexture() *image.RGBA {
-	return t.floorTex
+	if t.renderFloorTex {
+		return t.floorTex
+	}
+	return nil
 }
