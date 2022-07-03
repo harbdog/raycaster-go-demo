@@ -8,6 +8,7 @@ import (
 	"os"
 	"runtime"
 
+	"image/color"
 	_ "image/png"
 
 	"github.com/harbdog/raycaster-go-demo/game/model"
@@ -62,6 +63,12 @@ type Game struct {
 	// zoom settings
 	zoomFovDegrees float64
 	zoomFovDepth   float64
+
+	// lighting settings
+	lightFalloff       float64
+	globalIllumination float64
+	minLightRGB        color.NRGBA
+	maxLightRGB        color.NRGBA
 
 	//--array of levels, levels refer to "floors" of the world--//
 	mapObj       *model.Map
@@ -141,6 +148,16 @@ func NewGame() *Game {
 
 	g.zoomFovDepth = 2.0
 	g.zoomFovDegrees = g.fovDegrees / g.zoomFovDepth
+
+	// set demo non-default lighting settings
+	g.lightFalloff = -200
+	g.globalIllumination = 500
+	g.minLightRGB = color.NRGBA{R: 142, G: 142, B: 142}
+	g.maxLightRGB = color.NRGBA{R: 255, G: 255, B: 255}
+
+	g.camera.SetLightFalloff(g.lightFalloff)
+	g.camera.SetGlobalIllumination(g.globalIllumination)
+	g.camera.SetLightRGB(g.minLightRGB, g.maxLightRGB)
 
 	// init menu system
 	g.menu = mainMenu()
@@ -285,6 +302,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			float64(g.width)/2-float64(w.W)*weaponScale/2,
 			float64(g.height)-float64(w.H)*weaponScale+1,
 		)
+
+		// apply lighting setting
+		op.ColorM.Scale(float64(g.maxLightRGB.R)/255, float64(g.maxLightRGB.G)/255, float64(g.maxLightRGB.B)/255, 1)
+
 		screen.DrawImage(w.Texture(), op)
 
 		w.Update()

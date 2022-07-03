@@ -42,10 +42,12 @@ func (g *Game) openMenu() {
 	g.menu.newRenderScale = float32(g.renderScale)
 	g.menu.newFovDegrees = float32(g.fovDegrees)
 
-	if g.menu.newMinLightRGB == nil {
-		// for demo purposes only retaining these values in the menu
-		g.menu.newMinLightRGB = &[3]float32{0, 0, 0}
-		g.menu.newMaxLightRGB = &[3]float32{1, 1, 1} // represents NRGBA{255, 255, 255}
+	// for color menu items [1, 1, 1] represents NRGBA{255, 255, 255}
+	g.menu.newMinLightRGB = &[3]float32{
+		float32(g.minLightRGB.R) * 1 / 255, float32(g.minLightRGB.G) * 1 / 255, float32(g.minLightRGB.B) * 1 / 255,
+	}
+	g.menu.newMaxLightRGB = &[3]float32{
+		float32(g.maxLightRGB.R) * 1 / 255, float32(g.maxLightRGB.G) * 1 / 255, float32(g.maxLightRGB.B) * 1 / 255,
 	}
 }
 
@@ -138,9 +140,13 @@ func (m *DemoMenu) update(g *Game) {
 
 		if lightColorChanged {
 			// need to handle menu derived value as a fraction of 1/255
-			minLightRGB := color.NRGBA{R: byte(m.newMinLightRGB[0] * 255), G: byte(m.newMinLightRGB[1] * 255), B: byte(m.newMinLightRGB[2] * 255)}
-			maxLightRGB := color.NRGBA{R: byte(m.newMaxLightRGB[0] * 255), G: byte(m.newMaxLightRGB[1] * 255), B: byte(m.newMaxLightRGB[2] * 255)}
-			g.camera.SetLightRGB(minLightRGB, maxLightRGB)
+			g.minLightRGB = color.NRGBA{
+				R: byte(m.newMinLightRGB[0] * 255), G: byte(m.newMinLightRGB[1] * 255), B: byte(m.newMinLightRGB[2] * 255),
+			}
+			g.maxLightRGB = color.NRGBA{
+				R: byte(m.newMaxLightRGB[0] * 255), G: byte(m.newMaxLightRGB[1] * 255), B: byte(m.newMaxLightRGB[2] * 255),
+			}
+			g.camera.SetLightRGB(g.minLightRGB, g.maxLightRGB)
 		}
 
 		// Just some extra spacing
