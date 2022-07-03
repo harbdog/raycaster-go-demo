@@ -152,7 +152,7 @@ func NewGame() *Game {
 	// set demo non-default lighting settings
 	g.lightFalloff = -200
 	g.globalIllumination = 500
-	g.minLightRGB = color.NRGBA{R: 142, G: 142, B: 142}
+	g.minLightRGB = color.NRGBA{R: 76, G: 76, B: 76}
 	g.maxLightRGB = color.NRGBA{R: 255, G: 255, B: 255}
 
 	g.camera.SetLightFalloff(g.lightFalloff)
