@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"image/color"
 
 	"github.com/gabstv/ebiten-imgui/renderer"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -17,6 +18,8 @@ type DemoMenu struct {
 	newRenderHeight int32
 	newRenderScale  float32
 	newFovDegrees   float32
+	newMinLightRGB  *[3]float32
+	newMaxLightRGB  *[3]float32
 }
 
 func mainMenu() DemoMenu {
@@ -38,6 +41,12 @@ func (g *Game) openMenu() {
 	g.menu.newRenderHeight = int32(g.screenHeight)
 	g.menu.newRenderScale = float32(g.renderScale)
 	g.menu.newFovDegrees = float32(g.fovDegrees)
+
+	if g.menu.newMinLightRGB == nil {
+		// for demo purposes only retaining these values in the menu
+		g.menu.newMinLightRGB = &[3]float32{0, 0, 0}
+		g.menu.newMaxLightRGB = &[3]float32{1, 1, 1} // represents NRGBA{255, 255, 255}
+	}
 }
 
 func (g *Game) closeMenu() {
@@ -115,6 +124,24 @@ func (m *DemoMenu) update(g *Game) {
 		}
 
 		imgui.Checkbox("Floor Texturing", &g.tex.renderFloorTex)
+
+		imgui.Separator()
+
+		imgui.Text("Lighting:")
+		lightColorChanged := false
+		if imgui.ColorEdit3("Min Lighting", m.newMinLightRGB) {
+			lightColorChanged = true
+		}
+		if imgui.ColorEdit3("Max Lighting", m.newMaxLightRGB) {
+			lightColorChanged = true
+		}
+
+		if lightColorChanged {
+			// need to handle menu derived value as a fraction of 1/255
+			minLightRGB := color.NRGBA{R: byte(m.newMinLightRGB[0] * 255), G: byte(m.newMinLightRGB[1] * 255), B: byte(m.newMinLightRGB[2] * 255)}
+			maxLightRGB := color.NRGBA{R: byte(m.newMaxLightRGB[0] * 255), G: byte(m.newMaxLightRGB[1] * 255), B: byte(m.newMaxLightRGB[2] * 255)}
+			g.camera.SetLightRGB(minLightRGB, maxLightRGB)
+		}
 
 		// Just some extra spacing
 		imgui.Dummy(imgui.Vec2{X: 10, Y: 10})
