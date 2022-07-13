@@ -143,6 +143,8 @@ github.com/harbdog/raycaster-go v1.0.7 h1:sKxaMHuy/a9hCsmNw/CAp0sI8Zxlo8bzGKHPhJ
 github.com/harbdog/raycaster-go v1.0.7/go.mod h1:lw21+NIcyMew3U+lvFhBicsgH+ns7mrR9KxXj55A2oA=
 github.com/harbdog/raycaster-go v1.0.8 h1:02YGFKXnKwNXfEnlX4S8I1VPvKi0gTCOPK7kycI/IQ4=
 github.com/harbdog/raycaster-go v1.0.8/go.mod h1:lw21+NIcyMew3U+lvFhBicsgH+ns7mrR9KxXj55A2oA=
+github.com/harbdog/raycaster-go v1.1.0 h1:7H4+6yqTNgsSrafwLhM1mZyk8GhrPj7qDQpBn3M+QhQ=
+github.com/harbdog/raycaster-go v1.1.0/go.mod h1:lw21+NIcyMew3U+lvFhBicsgH+ns7mrR9KxXj55A2oA=
 github.com/hashicorp/golang-lru v0.5.0/go.mod h1:/m3WP610KZHVQ1SGc6re/UDhFvYD7pJ4Ao+sR/qLZy8=
 github.com/hashicorp/golang-lru v0.5.1/go.mod h1:/m3WP610KZHVQ1SGc6re/UDhFvYD7pJ4Ao+sR/qLZy8=
 github.com/hashicorp/hcl v1.0.0 h1:0Anlzjpi4vEasTeNFn2mLJgTSwt0+6sfsiTG8qcWGx4=
@@ -248,6 +250,8 @@ golang.org/x/exp v0.0.0-20200224162631-6cc2880d07d6 h1:QE6XYQK6naiK1EPAe1g/ILLxN
 golang.org/x/exp v0.0.0-20200224162631-6cc2880d07d6/go.mod h1:3jZMyOhIsHpP37uCMkUooju7aAi5cS1Q23tOzKc+0MU=
 golang.org/x/exp/shiny v0.0.0-20220613132600-b0d781184e0d h1:3fmC1S0vAPNLt6CUsdXpv2GMIrro+hc2KsEjgIi3QcQ=
 golang.org/x/exp/shiny v0.0.0-20220613132600-b0d781184e0d/go.mod h1:VjAR7z0ngyATZTELrBSkxOOHhhlnVUxDye4mcjx5h/8=
+golang.org/x/exp/shiny v0.0.0-20220713135740-79cabaa25d75 h1:+tvDaVUVC7xUhwmi3B/tvmqManNx24wRIWsXvvnkb8Q=
+golang.org/x/exp/shiny v0.0.0-20220713135740-79cabaa25d75/go.mod h1:VjAR7z0ngyATZTELrBSkxOOHhhlnVUxDye4mcjx5h/8=
 golang.org/x/image v0.0.0-20190227222117-0694c2d4d067/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
 golang.org/x/image v0.0.0-20190802002840-cff245a6509b/go.mod h1:FeLwcggjj3mMvU+oOTbSwawSJRM1uh48EjtB4UJZlP0=
 golang.org/x/image v0.0.0-20211028202545-6944b10bf410/go.mod h1:023OzeP/+EPmXeapQh35lcL3II3LrY8Ic+EFFKVhULM=

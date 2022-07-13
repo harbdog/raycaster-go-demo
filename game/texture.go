@@ -72,7 +72,9 @@ func (t *TextureHandler) TextureAt(x, y, levelNum, side int) *ebiten.Image {
 	return t.textures[texNum]
 }
 
-func (t *TextureHandler) FloorTexture() *image.RGBA {
+func (t *TextureHandler) FloorTextureAt(x, y int) *image.RGBA {
+	// x/y could be used to render different floor texture at given coords,
+	// but for this demo we will just be rendering the same texture everywhere.
 	if t.renderFloorTex {
 		return t.floorTex
 	}
