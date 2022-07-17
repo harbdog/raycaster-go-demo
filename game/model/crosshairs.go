@@ -4,6 +4,7 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/harbdog/raycaster-go"
 	"github.com/jinzhu/copier"
 )
 
@@ -18,7 +19,7 @@ func NewCrosshairs(
 ) *Crosshairs {
 	mapColor := color.RGBA{0, 0, 0, 0}
 	c := &Crosshairs{
-		Sprite: NewSpriteFromSheet(x, y, scale, img, mapColor, columns, rows, crosshairIndex, 0, 0, 0),
+		Sprite: NewSpriteFromSheet(x, y, scale, img, mapColor, columns, rows, crosshairIndex, raycaster.AnchorCenter, 0),
 	}
 
 	hitIndicator := &Crosshairs{}
