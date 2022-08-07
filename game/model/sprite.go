@@ -109,7 +109,7 @@ func NewSpriteFromSheet(
 		y := r * s.H
 		for c := 0; c < columns; c++ {
 			x := c * s.W
-			cellRect := image.Rect(x, y, x+s.W-1, y+s.H-1)
+			cellRect := image.Rect(x, y, x+s.W, y+s.H)
 			cellImg := img.SubImage(cellRect).(*ebiten.Image)
 
 			index := c + r*columns
@@ -158,7 +158,7 @@ func NewAnimatedSprite(
 		y := r * s.H
 		for c := 0; c < columns; c++ {
 			x := c * s.W
-			cellRect := image.Rect(x, y, x+s.W-1, y+s.H-1)
+			cellRect := image.Rect(x, y, x+s.W, y+s.H)
 			cellImg := img.SubImage(cellRect).(*ebiten.Image)
 
 			index := c + r*columns
