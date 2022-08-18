@@ -81,7 +81,7 @@ func (w *Weapon) Update() {
 	if w.cooldown > 0 {
 		w.cooldown -= 1
 	}
-	if w.firing && w.Sprite.GetLoopCounter() < 1 {
+	if w.firing && w.Sprite.LoopCounter() < 1 {
 		w.Sprite.Update(nil)
 	} else {
 		w.firing = false

@@ -140,6 +140,8 @@ func (m *DemoMenu) update(g *Game) {
 
 		imgui.Checkbox("Floor Texturing", &g.tex.renderFloorTex)
 
+		imgui.Checkbox("Sprite Boxes", &g.showSpriteBoxes)
+
 		// New section for lighting options
 		imgui.Separator()
 

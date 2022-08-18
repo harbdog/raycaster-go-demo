@@ -15,6 +15,9 @@ To install and run the demo from source:
 3. From the demo project folder, use the following command to run it:
     * `go run main.go`
 
+**NOTE**: Depending on the OS, the Ebitengine game library may have
+[additional dependencies to install](https://ebiten.org/documents/install.html).
+
 ## Controls
 
 * Press `Escape` key (or hold `CTRL`) to toggle mouse cursor capture (needed to close the window)

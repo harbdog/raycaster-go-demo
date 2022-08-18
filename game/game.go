@@ -14,6 +14,7 @@ import (
 	"github.com/harbdog/raycaster-go-demo/game/model"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/harbdog/raycaster-go"
 	"github.com/harbdog/raycaster-go/geom"
 	"github.com/spf13/viper"
@@ -82,7 +83,8 @@ type Game struct {
 
 	mapWidth, mapHeight int
 
-	debug bool
+	showSpriteBoxes bool
+	debug           bool
 }
 
 // NewGame - Allows the game to perform any initialization it needs to before starting to run.
@@ -183,6 +185,7 @@ func (g *Game) initConfig() {
 
 	// set default config values
 	viper.SetDefault("debug", false)
+	viper.SetDefault("showSpriteBoxes", false)
 	viper.SetDefault("screen.width", 1024)
 	viper.SetDefault("screen.height", 768)
 	viper.SetDefault("screen.renderScale", 1.0)
@@ -198,6 +201,7 @@ func (g *Game) initConfig() {
 	g.screenHeight = viper.GetInt("screen.height")
 	g.renderScale = viper.GetFloat64("screen.renderScale")
 	g.renderDistance = viper.GetFloat64("screen.renderDistance")
+	g.showSpriteBoxes = viper.GetBool("showSpriteBoxes")
 	g.debug = viper.GetBool("debug")
 }
 
@@ -317,6 +321,21 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		w.Update()
 	}
 
+	if g.showSpriteBoxes {
+		// draw sprite screen indicators to show we know where it was raycasted (must occur after camera.Update)
+		for sprite := range g.sprites {
+			drawSpriteBox(screen, sprite)
+		}
+
+		for sprite := range g.projectiles {
+			drawSpriteBox(screen, sprite.Sprite)
+		}
+
+		for sprite := range g.effects {
+			drawSpriteBox(screen, sprite.Sprite)
+		}
+	}
+
 	// draw minimap
 	mm := g.miniMap()
 	mmImg := ebiten.NewImageFromImage(mm)
@@ -350,6 +369,21 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	// draw menu (if active)
 	g.menu.draw(screen)
+}
+
+func drawSpriteBox(screen *ebiten.Image, sprite *model.Sprite) {
+	r := sprite.ScreenRect()
+	if r == nil {
+		return
+	}
+
+	minX, minY := float64(r.Min.X), float64(r.Min.Y)
+	maxX, maxY := float64(r.Max.X), float64(r.Max.Y)
+
+	ebitenutil.DrawLine(screen, minX, minY, minX, maxY, color.RGBA{255, 0, 0, 255})
+	ebitenutil.DrawLine(screen, minX, maxY, maxX, maxY, color.RGBA{255, 0, 0, 255})
+	ebitenutil.DrawLine(screen, maxX, maxY, maxX, minY, color.RGBA{255, 0, 0, 255})
+	ebitenutil.DrawLine(screen, maxX, minY, minX, minY, color.RGBA{255, 0, 0, 255})
 }
 
 func (g *Game) setFullscreen(fullscreen bool) {
@@ -563,7 +597,7 @@ func (g *Game) updateProjectiles() {
 	// Testing animated effects (explosions)
 	for e := range g.effects {
 		e.Update(g.player.Position)
-		if e.GetLoopCounter() >= e.LoopCount {
+		if e.LoopCounter() >= e.LoopCount {
 			g.deleteEffect(e)
 		}
 	}
