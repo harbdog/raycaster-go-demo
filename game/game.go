@@ -7,7 +7,6 @@ import (
 	"math/rand"
 	"os"
 	"runtime"
-	"strings"
 
 	"image/color"
 	_ "image/png"
