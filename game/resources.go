@@ -106,16 +106,29 @@ func (g *Game) loadSprites() {
 	yellow := color.RGBA{255, 200, 0, 196}
 
 	// preload projectile sprites
-	chargedBoltCollisionRadius := 20.0 / texWidth
+	chargedBoltImg := g.tex.textures[17]
+	chargedBoltWidth, _ := chargedBoltImg.Size()
+	chargedBoltCols, chargedBoltRows := 12, 1
+	chargedBoltScale := 0.75
+	// in pixels, radius to use for collision testing
+	chargedBoltPxRadius := 50.0
+	chargedBoltCollisionRadius := (chargedBoltScale * chargedBoltPxRadius) / (float64(chargedBoltWidth) / float64(chargedBoltCols))
+	chargedBoltCollisionHeight := 2 * chargedBoltCollisionRadius
 	chargedBoltProjectile := model.NewAnimatedProjectile(
-		0, 0, 0.75, 1, g.tex.textures[17], blueish,
-		12, 1, raycaster.AnchorCenter, chargedBoltCollisionRadius, 2*chargedBoltCollisionRadius,
+		0, 0, chargedBoltScale, 1, chargedBoltImg, blueish,
+		chargedBoltCols, chargedBoltRows, raycaster.AnchorCenter, chargedBoltCollisionRadius, chargedBoltCollisionHeight,
 	)
 
-	redBoltCollisionRadius := 5.0 / texWidth
+	redBoltImg := g.tex.textures[22]
+	redBoltWidth, _ := redBoltImg.Size()
+	redBoltScale := 0.25
+	// in pixels, radius to use for collision testing
+	redBoltPxRadius := 4.0
+	redBoltCollisionRadius := (redBoltScale * redBoltPxRadius) / float64(redBoltWidth)
+	redBoltCollisionHeight := 2 * redBoltCollisionRadius
 	redBoltProjectile := model.NewProjectile(
-		0, 0, 0.25, g.tex.textures[22], reddish,
-		raycaster.AnchorCenter, redBoltCollisionRadius, 2*redBoltCollisionRadius,
+		0, 0, redBoltScale, redBoltImg, reddish,
+		raycaster.AnchorCenter, redBoltCollisionRadius, redBoltCollisionHeight,
 	)
 
 	// preload effect sprites
