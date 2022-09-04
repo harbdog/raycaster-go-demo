@@ -3,6 +3,9 @@
 * `tree_##.png`: "Bleed" - http://remusprites.carbonmade.com/
   * https://opengameart.org/content/tree-collection-v26-bleeds-game-art
 
+* `large_rock.png`: "patvanmackelberg"
+  * https://opengameart.org/content/forest-scene-items-animated-slimeexp-orbs
+
 * `bat_sheet.png`: "bagzie"
   * https://opengameart.org/content/bat-sprite
 

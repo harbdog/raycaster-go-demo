@@ -28,6 +28,7 @@ func (g *Game) loadContent() {
 	g.tex.textures[5] = getTextureFromFile("ebitengine_splash.png")
 
 	// separating sprites out a bit from wall textures
+	g.tex.textures[8] = getSpriteFromFile("large_rock.png")
 	g.tex.textures[9] = getSpriteFromFile("tree_09.png")
 	g.tex.textures[10] = getSpriteFromFile("tree_10.png")
 	g.tex.textures[14] = getSpriteFromFile("tree_14.png")
@@ -224,6 +225,16 @@ func (g *Game) loadSprites() {
 		chargedBoltProjectile.AddDebugLines(2, color.RGBA{0, 255, 0, 255})
 		redBoltProjectile.AddDebugLines(2, color.RGBA{0, 255, 0, 255})
 	}
+
+	// rock that can be jumped over but not walked through
+	rockImg := g.tex.textures[8]
+	rockWidth, rockHeight := rockImg.Size()
+	rockScale := 0.4
+	rockPxRadius, rockPxHeight := 24.0, 35.0
+	rockCollisionRadius := (rockScale * rockPxRadius) / float64(rockWidth)
+	rockCollisionHeight := (rockScale * rockPxHeight) / float64(rockHeight)
+	rock := model.NewSprite(8.0, 5.5, rockScale, rockImg, brown, raycaster.AnchorBottom, rockCollisionRadius, rockCollisionHeight)
+	g.addSprite(rock)
 
 	// testing sprite scaling
 	testScale := 0.5

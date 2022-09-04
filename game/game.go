@@ -473,25 +473,29 @@ func (g *Game) Pitch(pSpeed float64) {
 
 func (g *Game) Stand() {
 	g.player.CameraZ = 0.5
+	g.player.PositionZ = 0
 	g.player.Moved = true
 }
 
 func (g *Game) IsStanding() bool {
-	return g.player.CameraZ == 0.5
+	return g.player.PositionZ == 0 && g.player.CameraZ == 0.5
 }
 
 func (g *Game) Jump() {
 	g.player.CameraZ = 0.9
+	g.player.PositionZ = 0.4
 	g.player.Moved = true
 }
 
 func (g *Game) Crouch() {
 	g.player.CameraZ = 0.3
+	g.player.PositionZ = 0
 	g.player.Moved = true
 }
 
 func (g *Game) Prone() {
 	g.player.CameraZ = 0.1
+	g.player.PositionZ = 0
 	g.player.Moved = true
 }
 
