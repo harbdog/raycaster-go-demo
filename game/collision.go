@@ -18,13 +18,12 @@ type EntityCollision struct {
 // checks for valid move from current position, returns valid (x, y) position, whether a collision
 // was encountered, and a list of entity collisions that may have been encountered
 func (g *Game) getValidMove(entity *model.Entity, moveX, moveY, moveZ float64, checkAlternate bool) (*geom.Vector2, bool, []*EntityCollision) {
-	newX, newY, newZ := moveX, moveY, moveZ
-
 	posX, posY, posZ := entity.Position.X, entity.Position.Y, entity.PositionZ
-	if posX == newX && posY == moveY {
+	if posX == moveX && posY == moveY && posZ == moveZ {
 		return &geom.Vector2{X: posX, Y: posY}, false, []*EntityCollision{}
 	}
 
+	newX, newY, newZ := moveX, moveY, moveZ
 	moveLine := geom.Line{X1: posX, Y1: posY, X2: newX, Y2: newY}
 
 	intersectPoints := []geom.Vector2{}
