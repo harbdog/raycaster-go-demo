@@ -3,6 +3,9 @@
 * `tree_##.png`: "Bleed" - http://remusprites.carbonmade.com/
   * https://opengameart.org/content/tree-collection-v26-bleeds-game-art
 
+* `bat_sheet.png`: "bagzie"
+  * https://opengameart.org/content/bat-sprite
+
 * `sorcerer_sheet.png`: Warren Clark
   * https://lionheart963.itch.io/sorcerer-villain
 
