@@ -131,6 +131,7 @@ func NewGame() *Game {
 	angleDegrees := 60.0
 	g.player = model.NewPlayer(8.5, 3.5, geom.Radians(angleDegrees), 0)
 	g.player.CollisionRadius = clipDistance
+	g.player.CollisionHeight = 0.5
 
 	// init the sprites
 	g.loadSprites()
@@ -427,7 +428,7 @@ func (g *Game) setFovAngle(fovDegrees float64) {
 func (g *Game) Move(mSpeed float64) {
 	moveLine := geom.LineFromAngle(g.player.Position.X, g.player.Position.Y, g.player.Angle, mSpeed)
 
-	newPos, _, _ := g.getValidMove(g.player.Entity, moveLine.X2, moveLine.Y2, true)
+	newPos, _, _ := g.getValidMove(g.player.Entity, moveLine.X2, moveLine.Y2, g.player.PositionZ, true)
 	if !newPos.Equals(g.player.Pos()) {
 		g.player.Position = newPos
 		g.player.Moved = true
@@ -442,7 +443,7 @@ func (g *Game) Strafe(sSpeed float64) {
 	}
 	strafeLine := geom.LineFromAngle(g.player.Position.X, g.player.Position.Y, g.player.Angle-strafeAngle, math.Abs(sSpeed))
 
-	newPos, _, _ := g.getValidMove(g.player.Entity, strafeLine.X2, strafeLine.Y2, true)
+	newPos, _, _ := g.getValidMove(g.player.Entity, strafeLine.X2, strafeLine.Y2, g.player.PositionZ, true)
 	if !newPos.Equals(g.player.Pos()) {
 		g.player.Position = newPos
 		g.player.Moved = true
@@ -471,26 +472,26 @@ func (g *Game) Pitch(pSpeed float64) {
 }
 
 func (g *Game) Stand() {
-	g.player.PositionZ = 0.5
+	g.player.CameraZ = 0.5
 	g.player.Moved = true
 }
 
 func (g *Game) IsStanding() bool {
-	return g.player.PosZ() == 0.5
+	return g.player.CameraZ == 0.5
 }
 
 func (g *Game) Jump() {
-	g.player.PositionZ = 0.9
+	g.player.CameraZ = 0.9
 	g.player.Moved = true
 }
 
 func (g *Game) Crouch() {
-	g.player.PositionZ = 0.3
+	g.player.CameraZ = 0.3
 	g.player.Moved = true
 }
 
 func (g *Game) Prone() {
-	g.player.PositionZ = 0.1
+	g.player.CameraZ = 0.1
 	g.player.Moved = true
 }
 
@@ -508,7 +509,7 @@ func (g *Game) fireWeapon() {
 	w.Fire()
 
 	// spawning projectile at player position just slightly below player's center point of view
-	pX, pY, pZ := g.player.Position.X, g.player.Position.Y, geom.Clamp(g.player.PositionZ-0.15, 0.05, g.player.PositionZ+0.5)
+	pX, pY, pZ := g.player.Position.X, g.player.Position.Y, geom.Clamp(g.player.CameraZ-0.1, 0.05, 0.95)
 	// TODO: pitch angle should be based on raycasted angle toward crosshairs, for now just simplified as player pitch angle
 	pAngle, pPitch := g.player.Angle, g.player.Pitch
 
@@ -528,11 +529,8 @@ func (g *Game) updatePlayerCamera(forceUpdate bool) {
 	// reset player moved flag to only update camera when necessary
 	g.player.Moved = false
 
-	playerPos := g.player.Position.Copy()
-	playerPosZ := (g.player.PositionZ - 0.5) * float64(g.height)
-
-	g.camera.SetPosition(playerPos)
-	g.camera.SetPositionZ(playerPosZ)
+	g.camera.SetPosition(g.player.Position.Copy())
+	g.camera.SetPositionZ(g.player.CameraZ)
 	g.camera.SetHeadingAngle(g.player.Angle)
 	g.camera.SetPitchAngle(g.player.Pitch)
 }
@@ -549,7 +547,7 @@ func (g *Game) updateProjectiles() {
 			zCheck := trajectory.Z2
 
 			// TODO: getValidMove needs to be able to take PosZ into account for wall/sprite collisions
-			newPos, isCollision, collisions := g.getValidMove(p.Entity, xCheck, yCheck, false)
+			newPos, isCollision, collisions := g.getValidMove(p.Entity, xCheck, yCheck, zCheck, false)
 			if isCollision || p.PositionZ <= 0 {
 				// for testing purposes, projectiles instantly get deleted when collision occurs
 				g.deleteProjectile(p)
@@ -577,7 +575,7 @@ func (g *Game) updateProjectiles() {
 				}
 			} else {
 				p.Position = newPos
-				p.PositionZ = zCheck // TODO: some basic Z axis collision checking
+				p.PositionZ = zCheck
 			}
 		}
 		p.Update(g.player.Position)
@@ -600,8 +598,9 @@ func (g *Game) updateSprites() {
 
 			xCheck := vLine.X2
 			yCheck := vLine.Y2
+			zCheck := s.PositionZ
 
-			newPos, isCollision, _ := g.getValidMove(s.Entity, xCheck, yCheck, false)
+			newPos, isCollision, _ := g.getValidMove(s.Entity, xCheck, yCheck, zCheck, false)
 			if isCollision {
 				// for testing purposes, letting the sample sprite ping pong off walls in somewhat random direction
 				s.Angle = randFloat(-math.Pi, math.Pi)

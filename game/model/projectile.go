@@ -20,10 +20,10 @@ type Projectile struct {
 
 func NewProjectile(
 	x, y, scale float64, img *ebiten.Image, mapColor color.RGBA,
-	anchor raycaster.SpriteAnchor, collisionRadius float64,
+	anchor raycaster.SpriteAnchor, collisionRadius, collisionHeight float64,
 ) *Projectile {
 	p := &Projectile{
-		Sprite:       NewSprite(x, y, scale, img, mapColor, anchor, collisionRadius),
+		Sprite:       NewSprite(x, y, scale, img, mapColor, anchor, collisionRadius, collisionHeight),
 		Ricochets:    0,
 		Lifespan:     math.MaxFloat64,
 		ImpactEffect: Effect{},
@@ -34,10 +34,10 @@ func NewProjectile(
 
 func NewAnimatedProjectile(
 	x, y, scale float64, animationRate int, img *ebiten.Image, mapColor color.RGBA, columns, rows int,
-	anchor raycaster.SpriteAnchor, collisionRadius float64,
+	anchor raycaster.SpriteAnchor, collisionRadius, collisionHeight float64,
 ) *Projectile {
 	p := &Projectile{
-		Sprite:       NewAnimatedSprite(x, y, scale, animationRate, img, mapColor, columns, rows, anchor, collisionRadius),
+		Sprite:       NewAnimatedSprite(x, y, scale, animationRate, img, mapColor, columns, rows, anchor, collisionRadius, collisionHeight),
 		Ricochets:    0,
 		Lifespan:     math.MaxFloat64,
 		ImpactEffect: Effect{},

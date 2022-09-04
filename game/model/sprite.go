@@ -16,8 +16,6 @@ import (
 
 type Sprite struct {
 	*Entity
-	scale          float64
-	anchor         raycaster.SpriteAnchor
 	W, H           int
 	AnimationRate  int
 	animReversed   bool
@@ -33,11 +31,11 @@ type Sprite struct {
 }
 
 func (s *Sprite) Scale() float64 {
-	return s.scale
+	return s.Entity.Scale
 }
 
 func (s *Sprite) VerticalAnchor() raycaster.SpriteAnchor {
-	return s.anchor
+	return s.Entity.Anchor
 }
 
 func (s *Sprite) Texture() *ebiten.Image {
@@ -54,20 +52,21 @@ func (s *Sprite) SetScreenRect(rect *image.Rectangle) {
 
 func NewSprite(
 	x, y, scale float64, img *ebiten.Image, mapColor color.RGBA,
-	anchor raycaster.SpriteAnchor, collisionRadius float64,
+	anchor raycaster.SpriteAnchor, collisionRadius, collisionHeight float64,
 ) *Sprite {
 	s := &Sprite{
 		Entity: &Entity{
 			Position:        &geom.Vector2{X: x, Y: y},
-			PositionZ:       0.5,
+			PositionZ:       0,
+			Scale:           scale,
+			Anchor:          anchor,
 			Angle:           0,
 			Velocity:        0,
 			CollisionRadius: collisionRadius,
+			CollisionHeight: collisionHeight,
 			MapColor:        mapColor,
 		},
 	}
-	s.scale = scale
-	s.anchor = anchor
 
 	s.texNum = 0
 	s.lenTex = 1
@@ -83,20 +82,21 @@ func NewSprite(
 
 func NewSpriteFromSheet(
 	x, y, scale float64, img *ebiten.Image, mapColor color.RGBA,
-	columns, rows, spriteIndex int, anchor raycaster.SpriteAnchor, collisionRadius float64,
+	columns, rows, spriteIndex int, anchor raycaster.SpriteAnchor, collisionRadius, collisionHeight float64,
 ) *Sprite {
 	s := &Sprite{
 		Entity: &Entity{
 			Position:        &geom.Vector2{X: x, Y: y},
-			PositionZ:       0.5,
+			PositionZ:       0,
+			Scale:           scale,
+			Anchor:          anchor,
 			Angle:           0,
 			Velocity:        0,
 			CollisionRadius: collisionRadius,
+			CollisionHeight: collisionHeight,
 			MapColor:        mapColor,
 		},
 	}
-	s.scale = scale
-	s.anchor = anchor
 
 	s.texNum = spriteIndex
 	s.columns, s.rows = columns, rows
@@ -128,20 +128,21 @@ func NewSpriteFromSheet(
 
 func NewAnimatedSprite(
 	x, y, scale float64, animationRate int, img *ebiten.Image, mapColor color.RGBA,
-	columns, rows int, anchor raycaster.SpriteAnchor, collisionRadius float64,
+	columns, rows int, anchor raycaster.SpriteAnchor, collisionRadius, collisionHeight float64,
 ) *Sprite {
 	s := &Sprite{
 		Entity: &Entity{
 			Position:        &geom.Vector2{X: x, Y: y},
-			PositionZ:       0.5,
+			PositionZ:       0,
+			Scale:           scale,
+			Anchor:          anchor,
 			Angle:           0,
 			Velocity:        0,
 			CollisionRadius: collisionRadius,
+			CollisionHeight: collisionHeight,
 			MapColor:        mapColor,
 		},
 	}
-	s.scale = scale
-	s.anchor = anchor
 
 	s.AnimationRate = animationRate
 	s.animCounter = 0
