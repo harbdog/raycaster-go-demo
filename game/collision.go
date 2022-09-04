@@ -204,10 +204,6 @@ func zEntityIntersection(sourceZ float64, source, target *model.Entity) float64 
 	midZ := srcMinZ + (srcMaxZ-srcMinZ)/2
 	intersectZ = geom.Clamp(midZ, tgtMinZ, tgtMaxZ)
 
-	if srcMinZ > 0.1 && tgtMinZ > 0.1 {
-		return intersectZ
-	}
-
 	return intersectZ
 }
 
