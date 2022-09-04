@@ -575,7 +575,7 @@ func (g *Game) updateProjectiles() {
 				}
 			} else {
 				p.Position = newPos
-				p.PositionZ = zCheck // TODO: some basic Z axis collision checking
+				p.PositionZ = zCheck
 			}
 		}
 		p.Update(g.player.Position)
