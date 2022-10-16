@@ -21,5 +21,8 @@ func NewAnimatedEffect(
 		LoopCount: loopCount,
 	}
 
+	// effects should not be convergence capable by player focal point
+	e.Sprite.Focusable = false
+
 	return e
 }

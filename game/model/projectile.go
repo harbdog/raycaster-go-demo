@@ -29,6 +29,9 @@ func NewProjectile(
 		ImpactEffect: Effect{},
 	}
 
+	// projectiles should not be convergence capable by player focal point
+	p.Focusable = false
+
 	return p
 }
 
@@ -42,6 +45,9 @@ func NewAnimatedProjectile(
 		Lifespan:     math.MaxFloat64,
 		ImpactEffect: Effect{},
 	}
+
+	// projectiles should not be convergence capable by player focal point
+	p.Focusable = false
 
 	return p
 }

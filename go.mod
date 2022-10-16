@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/gabstv/ebiten-imgui v0.5.0
 	github.com/hajimehoshi/ebiten/v2 v2.3.5
-	github.com/harbdog/raycaster-go v1.5.0
+	github.com/harbdog/raycaster-go v1.6.0
 	github.com/inkyblackness/imgui-go/v4 v4.5.0
 	github.com/jinzhu/copier v0.3.5
 	github.com/spf13/viper v1.12.0
@@ -27,7 +27,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.0 // indirect
 	golang.org/x/exp v0.0.0-20200224162631-6cc2880d07d6 // indirect
-	golang.org/x/exp/shiny v0.0.0-20220827204233-334a2380cb91 // indirect
+	golang.org/x/exp/shiny v0.0.0-20221012211006-4de253d81b95 // indirect
 	golang.org/x/image v0.0.0-20220617043117-41969df76e82 // indirect
 	golang.org/x/mobile v0.0.0-20220518205345-8578da9835fd // indirect
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect

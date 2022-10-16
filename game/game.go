@@ -514,8 +514,19 @@ func (g *Game) fireWeapon() {
 
 	// spawning projectile at player position just slightly below player's center point of view
 	pX, pY, pZ := g.player.Position.X, g.player.Position.Y, geom.Clamp(g.player.CameraZ-0.1, 0.05, 0.95)
-	// TODO: pitch angle should be based on raycasted angle toward crosshairs, for now just simplified as player pitch angle
-	pAngle, pPitch := g.player.Angle, g.player.Pitch
+	// pitch, angle based on raycasted point at crosshairs
+	var pAngle, pPitch float64
+	convergenceDistance := g.camera.GetConvergenceDistance()
+	convergencePoint := g.camera.GetConvergencePoint()
+	if convergenceDistance == 0 || convergencePoint == nil {
+		pAngle, pPitch = g.player.Angle, g.player.Pitch
+	} else {
+		convergenceLine3d := &geom3d.Line3d{
+			X1: pX, Y1: pY, Z1: pZ,
+			X2: convergencePoint.X, Y2: convergencePoint.Y, Z2: convergencePoint.Z,
+		}
+		pAngle, pPitch = convergenceLine3d.Heading(), convergenceLine3d.Pitch()
+	}
 
 	projectile := w.SpawnProjectile(pX, pY, pZ, pAngle, pPitch, g.player.Entity)
 	if projectile != nil {
@@ -550,7 +561,6 @@ func (g *Game) updateProjectiles() {
 			yCheck := trajectory.Y2
 			zCheck := trajectory.Z2
 
-			// TODO: getValidMove needs to be able to take PosZ into account for wall/sprite collisions
 			newPos, isCollision, collisions := g.getValidMove(p.Entity, xCheck, yCheck, zCheck, false)
 			if isCollision || p.PositionZ <= 0 {
 				// for testing purposes, projectiles instantly get deleted when collision occurs
