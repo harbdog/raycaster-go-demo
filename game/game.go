@@ -518,7 +518,7 @@ func (g *Game) fireWeapon() {
 	var pAngle, pPitch float64
 	convergenceDistance := g.camera.GetConvergenceDistance()
 	convergencePoint := g.camera.GetConvergencePoint()
-	if convergenceDistance == 0 || convergencePoint == nil {
+	if convergenceDistance <= 0 || convergencePoint == nil {
 		pAngle, pPitch = g.player.Angle, g.player.Pitch
 	} else {
 		convergenceLine3d := &geom3d.Line3d{
