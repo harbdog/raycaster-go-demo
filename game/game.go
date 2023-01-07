@@ -261,6 +261,10 @@ func (g *Game) Update() error {
 
 	if !g.paused {
 		// Perform logical updates
+		w := g.player.Weapon
+		if w != nil {
+			w.Update()
+		}
 		g.updateProjectiles()
 		g.updateSprites()
 
@@ -317,8 +321,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		op.ColorM.Scale(float64(g.maxLightRGB.R)/255, float64(g.maxLightRGB.G)/255, float64(g.maxLightRGB.B)/255, 1)
 
 		screen.DrawImage(w.Texture(), op)
-
-		w.Update()
 	}
 
 	if g.showSpriteBoxes {
