@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"os"
 	"runtime"
+	"strings"
 
 	"image/color"
 	_ "image/png"
@@ -37,7 +38,8 @@ type Game struct {
 	paused bool
 
 	//--create slicer and declare slices--//
-	tex *TextureHandler
+	tex                *TextureHandler
+	initRenderFloorTex bool
 
 	// window resolution and scaling
 	screenWidth  int
@@ -107,14 +109,15 @@ func NewGame() *Game {
 	// use scale to keep the desired window width and height
 	g.setResolution(g.screenWidth, g.screenHeight)
 	g.setRenderScale(g.renderScale)
-	g.setFullscreen(false)
-	g.setVsyncEnabled(true)
+	g.setFullscreen(g.fullscreen)
+	g.setVsyncEnabled(g.vsync)
 
 	// load map
 	g.mapObj = model.NewMap()
 
 	// load texture handler
 	g.tex = NewTextureHandler(g.mapObj, 32)
+	g.tex.renderFloorTex = g.initRenderFloorTex
 
 	g.collisionMap = g.mapObj.GetCollisionLines(clipDistance)
 	worldMap := g.mapObj.Level(0)
@@ -174,7 +177,11 @@ func NewGame() *Game {
 func (g *Game) initConfig() {
 	viper.SetConfigName("demo-config")
 	viper.SetConfigType("json")
+
+	// setup environment variable with DEMO as prefix (e.g. "export DEMO_SCREEN_VSYNC=false")
 	viper.SetEnvPrefix("demo")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.AutomaticEnv()
 
 	userHomePath, _ := os.UserHomeDir()
 	if userHomePath != "" {
@@ -189,7 +196,10 @@ func (g *Game) initConfig() {
 	viper.SetDefault("screen.width", 1024)
 	viper.SetDefault("screen.height", 768)
 	viper.SetDefault("screen.renderScale", 1.0)
+	viper.SetDefault("screen.fullscreen", false)
+	viper.SetDefault("screen.vsync", true)
 	viper.SetDefault("screen.renderDistance", -1)
+	viper.SetDefault("screen.renderFloor", true)
 
 	err := viper.ReadInConfig()
 	if err != nil && g.debug {
@@ -200,7 +210,10 @@ func (g *Game) initConfig() {
 	g.screenWidth = viper.GetInt("screen.width")
 	g.screenHeight = viper.GetInt("screen.height")
 	g.renderScale = viper.GetFloat64("screen.renderScale")
+	g.fullscreen = viper.GetBool("screen.fullscreen")
+	g.vsync = viper.GetBool("screen.vsync")
 	g.renderDistance = viper.GetFloat64("screen.renderDistance")
+	g.initRenderFloorTex = viper.GetBool("screen.renderFloor")
 	g.showSpriteBoxes = viper.GetBool("showSpriteBoxes")
 	g.debug = viper.GetBool("debug")
 }
@@ -373,7 +386,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.menu.draw(screen)
 
 	// draw FPS/TPS counter debug display
-	fps := fmt.Sprintf("FPS: %f\nTPS: %f/%v", ebiten.CurrentFPS(), ebiten.CurrentTPS(), ebiten.MaxTPS())
+	fps := fmt.Sprintf("FPS: %f\nTPS: %f/%v", ebiten.ActualFPS(), ebiten.ActualTPS(), ebiten.TPS())
 	ebitenutil.DebugPrint(screen, fps)
 }
 
