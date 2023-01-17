@@ -24,5 +24,8 @@ func NewAnimatedEffect(
 	// effects should not be convergence capable by player focal point
 	e.Sprite.Focusable = false
 
+	// effects self illuminate so they do not get dimmed in dark conditions
+	e.illumination = 5000
+
 	return e
 }

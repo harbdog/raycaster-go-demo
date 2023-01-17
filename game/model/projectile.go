@@ -32,6 +32,9 @@ func NewProjectile(
 	// projectiles should not be convergence capable by player focal point
 	p.Focusable = false
 
+	// projectiles self illuminate so they do not get dimmed in dark conditions
+	p.illumination = 5000
+
 	return p
 }
 
@@ -48,6 +51,9 @@ func NewAnimatedProjectile(
 
 	// projectiles should not be convergence capable by player focal point
 	p.Focusable = false
+
+	// projectiles self illuminate so they do not get dimmed in dark conditions
+	p.illumination = 5000
 
 	return p
 }
