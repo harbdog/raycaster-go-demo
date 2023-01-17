@@ -36,7 +36,7 @@ func NewAnimatedWeapon(
 func (w *Weapon) Fire() bool {
 	if w.cooldown <= 0 {
 		// TODO: handle rate of fire greater than 60 per second?
-		w.cooldown = int(1 / w.rateOfFire * float64(ebiten.MaxTPS()))
+		w.cooldown = int(1 / w.rateOfFire * float64(ebiten.TPS()))
 
 		if !w.firing {
 			w.firing = true
@@ -61,7 +61,7 @@ func (w *Weapon) SpawnProjectile(x, y, z, angle, pitch float64, spawnedBy *Entit
 	p.Pitch = pitch
 
 	// convert velocity from distance/second to distance per tick
-	p.Velocity = w.projectileVelocity / float64(ebiten.MaxTPS())
+	p.Velocity = w.projectileVelocity / float64(ebiten.TPS())
 
 	// keep track of what spawned it
 	p.Parent = spawnedBy
