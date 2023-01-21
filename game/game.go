@@ -349,6 +349,17 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		for sprite := range g.effects {
 			drawSpriteBox(screen, sprite.Sprite)
 		}
+	} else {
+		// draw sprite screen indicator only for sprite at point of convergence
+		convergenceSprite := g.camera.GetConvergenceSprite()
+		if convergenceSprite != nil {
+			for sprite := range g.sprites {
+				if convergenceSprite == sprite {
+					drawSpriteIndicator(screen, sprite)
+					break
+				}
+			}
+		}
 	}
 
 	// draw minimap
@@ -403,6 +414,20 @@ func drawSpriteBox(screen *ebiten.Image, sprite *model.Sprite) {
 	ebitenutil.DrawLine(screen, minX, maxY, maxX, maxY, color.RGBA{255, 0, 0, 255})
 	ebitenutil.DrawLine(screen, maxX, maxY, maxX, minY, color.RGBA{255, 0, 0, 255})
 	ebitenutil.DrawLine(screen, maxX, minY, minX, minY, color.RGBA{255, 0, 0, 255})
+}
+
+func drawSpriteIndicator(screen *ebiten.Image, sprite *model.Sprite) {
+	r := sprite.ScreenRect()
+	if r == nil {
+		return
+	}
+
+	midX, minY := float64(r.Max.X)-float64(r.Dx())/2, float64(r.Min.Y)
+	dX, dY := float64(r.Dx())/8, float64(r.Dy())/8
+
+	ebitenutil.DrawLine(screen, midX, minY+dY, midX-dX, minY, color.RGBA{0, 255, 0, 255})
+	ebitenutil.DrawLine(screen, midX, minY+dY, midX+dX, minY, color.RGBA{0, 255, 0, 255})
+	ebitenutil.DrawLine(screen, midX-dX, minY, midX+dX, minY, color.RGBA{0, 255, 0, 255})
 }
 
 func (g *Game) setFullscreen(fullscreen bool) {
