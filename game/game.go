@@ -34,7 +34,7 @@ const (
 
 // Game - This is the main type for your game.
 type Game struct {
-	menu   DemoMenu
+	menu   *DemoMenu
 	paused bool
 
 	//--create slicer and declare slices--//
@@ -169,7 +169,7 @@ func NewGame() *Game {
 	g.camera.SetLightRGB(g.minLightRGB, g.maxLightRGB)
 
 	// init menu system
-	g.menu = mainMenu()
+	g.menu = createMenu(g)
 
 	return g
 }
@@ -286,7 +286,7 @@ func (g *Game) Update() error {
 	}
 
 	// update the menu (if active)
-	g.menu.update(g)
+	g.menu.update()
 
 	return nil
 }
