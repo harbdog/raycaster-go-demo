@@ -180,6 +180,28 @@ func displayPage(menu *DemoMenu) *page {
 	)
 	fovRow.AddChild(fovValueText)
 
+	// fullscreen checkbox
+	fsCheckbox := newCheckbox("Fullscreen", menu.game.fullscreen, func(args *widget.CheckboxChangedEventArgs) {
+		menu.game.setFullscreen(args.State == widget.WidgetChecked)
+	}, res)
+	c.AddChild(fsCheckbox)
+
+	// vsync checkbox
+	vsCheckbox := newCheckbox("Use VSync", menu.game.vsync, func(args *widget.CheckboxChangedEventArgs) {
+		menu.game.setVsyncEnabled(args.State == widget.WidgetChecked)
+	}, res)
+	c.AddChild(vsCheckbox)
+
+	return &page{
+		title:   "Display",
+		content: c,
+	}
+}
+
+func renderPage(menu *DemoMenu) *page {
+	c := newPageContentContainer()
+	res := menu.res
+
 	// render distance slider
 	distanceRow := widget.NewContainer(
 		widget.ContainerOpts.Layout(widget.NewRowLayout(
@@ -217,21 +239,20 @@ func displayPage(menu *DemoMenu) *page {
 	)
 	distanceRow.AddChild(distanceValueText)
 
-	// fullscreen checkbox
-	fsCheckbox := newCheckbox("Fullscreen", menu.game.fullscreen, func(args *widget.CheckboxChangedEventArgs) {
-		menu.game.setFullscreen(args.State == widget.WidgetChecked)
+	// floor texturing checkbox
+	floorCheckbox := newCheckbox("Floor Texturing", menu.game.tex.renderFloorTex, func(args *widget.CheckboxChangedEventArgs) {
+		menu.game.tex.renderFloorTex = args.State == widget.WidgetChecked
 	}, res)
-	c.AddChild(fsCheckbox)
+	c.AddChild(floorCheckbox)
 
-	// vsync checkbox
-	vsCheckbox := newCheckbox("Use VSync", menu.game.vsync, func(args *widget.CheckboxChangedEventArgs) {
-		menu.game.setVsyncEnabled(args.State == widget.WidgetChecked)
+	// sprite boxes checkbox
+	spriteBoxCheckbox := newCheckbox("Sprite Boxes", menu.game.showSpriteBoxes, func(args *widget.CheckboxChangedEventArgs) {
+		menu.game.showSpriteBoxes = args.State == widget.WidgetChecked
 	}, res)
-
-	c.AddChild(vsCheckbox)
+	c.AddChild(spriteBoxCheckbox)
 
 	return &page{
-		title:   "Display",
+		title:   "Render",
 		content: c,
 	}
 }

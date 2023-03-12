@@ -66,6 +66,7 @@ func settingsContainer(menu *DemoMenu) widget.PreferredSizeLocateableWidget {
 	pages := []interface{}{
 		gamePage(menu),
 		displayPage(menu),
+		renderPage(menu),
 	}
 
 	pageContainer := newPageContainer(res)
