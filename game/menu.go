@@ -42,6 +42,9 @@ type MenuAspectRatio struct {
 }
 
 func (r MenuResolution) String() string {
+	if r.aspectRatio.w == 0 || r.aspectRatio.h == 0 {
+		return fmt.Sprintf("(*) %dx%d", r.width, r.height)
+	}
 	return fmt.Sprintf("(%d:%d) %dx%d", r.aspectRatio.w, r.aspectRatio.h, r.width, r.height)
 }
 

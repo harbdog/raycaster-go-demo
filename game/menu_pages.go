@@ -64,16 +64,27 @@ func displayPage(menu *DemoMenu) *page {
 	)
 	c.AddChild(resolutionRow)
 
-	resolutionLabel := widget.NewLabel(widget.LabelOpts.Text("Resolution", res.label.face, res.label.text))
-	resolutionRow.AddChild(resolutionLabel)
-
 	resolutions := []interface{}{}
+	var selectedResolution interface{}
 	for _, r := range menu.resolutions {
 		resolutions = append(resolutions, r)
+		if menu.game.width == r.width && menu.game.height == r.height {
+			selectedResolution = r
+		}
+	}
+
+	if selectedResolution == nil {
+		// generate custom entry to put at top of the list
+		r := MenuResolution{
+			width:  menu.game.screenWidth,
+			height: menu.game.screenHeight,
+		}
+		resolutions = append([]interface{}{r}, resolutions...)
 	}
 
 	cb := newListComboButton(
 		resolutions,
+		selectedResolution,
 		func(e interface{}) string {
 			return fmt.Sprintf("%s", e)
 		},
@@ -86,6 +97,9 @@ func displayPage(menu *DemoMenu) *page {
 		},
 		res)
 	resolutionRow.AddChild(cb)
+
+	resolutionLabel := widget.NewLabel(widget.LabelOpts.Text("Resolution", res.label.face, res.label.text))
+	resolutionRow.AddChild(resolutionLabel)
 
 	fsCheckbox := newCheckbox("Fullscreen", menu.game.fullscreen, func(args *widget.CheckboxChangedEventArgs) {
 		menu.game.setFullscreen(args.State == widget.WidgetChecked)

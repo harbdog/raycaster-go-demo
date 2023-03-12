@@ -98,17 +98,6 @@ func settingsContainer(menu *DemoMenu) widget.PreferredSizeLocateableWidget {
 	return c
 }
 
-func newContentContainer() *widget.Container {
-	return widget.NewContainer(
-		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.AnchorLayoutData{
-			StretchHorizontal: true,
-		})),
-		widget.ContainerOpts.Layout(widget.NewRowLayout(
-			widget.RowLayoutOpts.Direction(widget.DirectionVertical),
-			widget.RowLayoutOpts.Spacing(10),
-		)))
-}
-
 func newCheckbox(label string, checked bool, changedHandler widget.CheckboxChangedHandlerFunc, res *uiResources) *widget.LabeledCheckbox {
 	c := widget.NewLabeledCheckbox(
 		widget.LabeledCheckboxOpts.Spacing(res.checkbox.spacing),
@@ -129,10 +118,10 @@ func newCheckbox(label string, checked bool, changedHandler widget.CheckboxChang
 	return c
 }
 
-func newListComboButton(entries []interface{}, buttonLabel widget.SelectComboButtonEntryLabelFunc, entryLabel widget.ListEntryLabelFunc,
+func newListComboButton(entries []interface{}, selectedEntry interface{}, buttonLabel widget.SelectComboButtonEntryLabelFunc, entryLabel widget.ListEntryLabelFunc,
 	entrySelectedHandler widget.ListComboButtonEntrySelectedHandlerFunc, res *uiResources) *widget.ListComboButton {
 
-	return widget.NewListComboButton(
+	c := widget.NewListComboButton(
 		widget.ListComboButtonOpts.SelectComboButtonOpts(
 			widget.SelectComboButtonOpts.ComboButtonOpts(
 				widget.ComboButtonOpts.ButtonOpts(
@@ -157,6 +146,12 @@ func newListComboButton(entries []interface{}, buttonLabel widget.SelectComboBut
 		),
 		widget.ListComboButtonOpts.EntryLabelFunc(buttonLabel, entryLabel),
 		widget.ListComboButtonOpts.EntrySelectedHandler(entrySelectedHandler))
+
+	if selectedEntry != nil {
+		c.SetSelectedEntry(selectedEntry)
+	}
+
+	return c
 }
 
 func newSeparator(res *uiResources, ld interface{}) widget.PreferredSizeLocateableWidget {

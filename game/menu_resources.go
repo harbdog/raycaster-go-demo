@@ -297,20 +297,6 @@ func loadFonts() (*fonts, error) {
 	}, nil
 }
 
-func (f *fonts) close() {
-	if f.face != nil {
-		_ = f.face.Close()
-	}
-
-	if f.titleFace != nil {
-		_ = f.titleFace.Close()
-	}
-
-	if f.bigTitleFace != nil {
-		_ = f.bigTitleFace.Close()
-	}
-}
-
 func loadFont(path string, size float64) (font.Face, error) {
 	fontData, err := embedded.ReadFile(path)
 	if err != nil {
@@ -876,10 +862,6 @@ func newToolTipResources(fonts *fonts) (*toolTipResources, error) {
 		face:  fonts.toolTipFace,
 		color: hexToColor(toolTipColor),
 	}, nil
-}
-
-func (u *uiResources) close() {
-	u.fonts.close()
 }
 
 func hexToColor(h string) color.Color {
