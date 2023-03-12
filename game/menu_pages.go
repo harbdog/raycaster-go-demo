@@ -51,6 +51,27 @@ func gamePage(menu *DemoMenu) *page {
 	}
 }
 
+func displayPage(menu *DemoMenu) *page {
+	c := newPageContentContainer()
+	res := menu.res
+
+	fsCheckbox := newCheckbox("Fullscreen", menu.game.fullscreen, func(args *widget.CheckboxChangedEventArgs) {
+		menu.game.setFullscreen(args.State == widget.WidgetChecked)
+	}, res)
+	c.AddChild(fsCheckbox)
+
+	vsCheckbox := newCheckbox("Use VSync", menu.game.vsync, func(args *widget.CheckboxChangedEventArgs) {
+		menu.game.setVsyncEnabled(args.State == widget.WidgetChecked)
+	}, res)
+
+	c.AddChild(vsCheckbox)
+
+	return &page{
+		title:   "Display",
+		content: c,
+	}
+}
+
 func newPageContentContainer() *widget.Container {
 	return widget.NewContainer(
 		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.AnchorLayoutData{

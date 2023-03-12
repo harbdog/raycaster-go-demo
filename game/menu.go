@@ -97,7 +97,7 @@ func createMenu(g *Game) *DemoMenu {
 		}),
 	)
 
-	r := image.Rect(0, 0, 550, 550)
+	r := image.Rect(0, 0, 2*ww/3, 2*wh/3)
 	r = r.Add(image.Point{ww / 8, wh / 16})
 	window.SetLocation(r)
 	ui.AddWindow(window)

@@ -65,6 +65,7 @@ func settingsContainer(menu *DemoMenu) widget.PreferredSizeLocateableWidget {
 
 	pages := []interface{}{
 		gamePage(menu),
+		displayPage(menu),
 	}
 
 	pageContainer := newPageContainer(res)
@@ -108,8 +109,8 @@ func newContentContainer() *widget.Container {
 		)))
 }
 
-func newCheckbox(label string, changedHandler widget.CheckboxChangedHandlerFunc, res *uiResources) *widget.LabeledCheckbox {
-	return widget.NewLabeledCheckbox(
+func newCheckbox(label string, checked bool, changedHandler widget.CheckboxChangedHandlerFunc, res *uiResources) *widget.LabeledCheckbox {
+	c := widget.NewLabeledCheckbox(
 		widget.LabeledCheckboxOpts.Spacing(res.checkbox.spacing),
 		widget.LabeledCheckboxOpts.CheckboxOpts(
 			widget.CheckboxOpts.ButtonOpts(widget.ButtonOpts.Image(res.checkbox.image)),
@@ -120,6 +121,12 @@ func newCheckbox(label string, changedHandler widget.CheckboxChangedHandlerFunc,
 				}
 			})),
 		widget.LabeledCheckboxOpts.LabelOpts(widget.LabelOpts.Text(label, res.label.face, res.label.text)))
+
+	if checked {
+		c.SetState(widget.WidgetChecked)
+	}
+
+	return c
 }
 
 func newSeparator(res *uiResources, ld interface{}) widget.PreferredSizeLocateableWidget {
