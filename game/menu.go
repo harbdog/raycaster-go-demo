@@ -17,6 +17,8 @@ type DemoMenu struct {
 	res    *uiResources
 	game   *Game
 
+	resolutions []MenuResolution
+
 	// held vars that should not get updated in real-time
 	newRenderWidth    int32
 	newRenderHeight   int32
@@ -28,6 +30,19 @@ type DemoMenu struct {
 	newLightFalloff       float32
 	newMinLightRGB        [3]float32
 	newMaxLightRGB        [3]float32
+}
+
+type MenuResolution struct {
+	width, height int
+	aspectRatio   MenuAspectRatio
+}
+
+type MenuAspectRatio struct {
+	w, h int
+}
+
+func (r MenuResolution) String() string {
+	return fmt.Sprintf("(%d:%d) %dx%d", r.aspectRatio.w, r.aspectRatio.h, r.width, r.height)
 }
 
 func createMenu(g *Game) *DemoMenu {
@@ -44,10 +59,11 @@ func createMenu(g *Game) *DemoMenu {
 	}
 
 	menu := &DemoMenu{
-		game:   g,
-		ui:     ui,
-		res:    res,
-		active: false,
+		game:        g,
+		ui:          ui,
+		res:         res,
+		active:      false,
+		resolutions: g.generateMenuResolutions(),
 	}
 
 	root := widget.NewContainer(
@@ -128,6 +144,43 @@ func (g *Game) openMenu() {
 	g.menu.newMaxLightRGB = [3]float32{
 		float32(g.maxLightRGB.R) * 1 / 255, float32(g.maxLightRGB.G) * 1 / 255, float32(g.maxLightRGB.B) * 1 / 255,
 	}
+}
+
+func (g *Game) generateMenuResolutions() []MenuResolution {
+	resolutions := make([]MenuResolution, 0)
+
+	ratios := []MenuAspectRatio{
+		{3, 2},
+		{4, 3},
+		{5, 4},
+		{16, 9},
+		{21, 9},
+	}
+
+	widths := []int{
+		320,
+		480,
+		640,
+		800,
+		960,
+		1024,
+		1280,
+		1440,
+		1600,
+		1920,
+	}
+
+	for _, r := range ratios {
+		for _, w := range widths {
+			h := (w / r.w) * r.h
+			resolutions = append(
+				resolutions,
+				MenuResolution{width: w, height: h, aspectRatio: r},
+			)
+		}
+	}
+
+	return resolutions
 }
 
 func (g *Game) closeMenu() {

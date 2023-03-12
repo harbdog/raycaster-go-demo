@@ -1,6 +1,8 @@
 package game
 
 import (
+	"fmt"
+
 	"github.com/ebitenui/ebitenui/widget"
 )
 
@@ -54,6 +56,36 @@ func gamePage(menu *DemoMenu) *page {
 func displayPage(menu *DemoMenu) *page {
 	c := newPageContentContainer()
 	res := menu.res
+
+	resolutionRow := widget.NewContainer(
+		widget.ContainerOpts.Layout(widget.NewRowLayout(
+			widget.RowLayoutOpts.Spacing(20),
+		)),
+	)
+	c.AddChild(resolutionRow)
+
+	resolutionLabel := widget.NewLabel(widget.LabelOpts.Text("Resolution", res.label.face, res.label.text))
+	resolutionRow.AddChild(resolutionLabel)
+
+	resolutions := []interface{}{}
+	for _, r := range menu.resolutions {
+		resolutions = append(resolutions, r)
+	}
+
+	cb := newListComboButton(
+		resolutions,
+		func(e interface{}) string {
+			return fmt.Sprintf("%s", e)
+		},
+		func(e interface{}) string {
+			return fmt.Sprintf("%s", e)
+		},
+		func(args *widget.ListComboButtonEntrySelectedEventArgs) {
+			r := args.Entry.(MenuResolution)
+			menu.game.setResolution(r.width, r.height)
+		},
+		res)
+	resolutionRow.AddChild(cb)
 
 	fsCheckbox := newCheckbox("Fullscreen", menu.game.fullscreen, func(args *widget.CheckboxChangedEventArgs) {
 		menu.game.setFullscreen(args.State == widget.WidgetChecked)
