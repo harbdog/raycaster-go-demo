@@ -14,22 +14,15 @@ import (
 type DemoMenu struct {
 	active bool
 	ui     *ebitenui.UI
+	window *widget.Window
 	res    *uiResources
 	game   *Game
 
 	resolutions []MenuResolution
 
 	// held vars that should not get updated in real-time
-	newRenderWidth    int32
-	newRenderHeight   int32
-	newRenderScale    float32
-	newFovDegrees     float32
-	newRenderDistance float32
-
-	newGlobalIllumination float32
-	newLightFalloff       float32
-	newMinLightRGB        [3]float32
-	newMaxLightRGB        [3]float32
+	newMinLightRGB [3]float32
+	newMaxLightRGB [3]float32
 }
 
 type MenuResolution struct {
@@ -120,6 +113,7 @@ func createMenu(g *Game) *DemoMenu {
 	r = r.Add(image.Point{ww / 8, wh / 16})
 	window.SetLocation(r)
 	ui.AddWindow(window)
+	menu.window = window
 
 	return menu
 }
@@ -130,16 +124,6 @@ func (g *Game) openMenu() {
 	g.mouseMode = MouseModeCursor
 	ebiten.SetCursorMode(ebiten.CursorModeVisible)
 
-	// setup initial values for held vars that should not get updated in real-time or need type conversion
-	g.menu.newRenderWidth = int32(g.screenWidth)
-	g.menu.newRenderHeight = int32(g.screenHeight)
-	g.menu.newRenderScale = float32(g.renderScale)
-	g.menu.newFovDegrees = float32(g.fovDegrees)
-	g.menu.newRenderDistance = float32(g.renderDistance)
-
-	g.menu.newLightFalloff = float32(g.lightFalloff)
-	g.menu.newGlobalIllumination = float32(g.globalIllumination)
-
 	// for color menu items [1, 1, 1] represents NRGBA{255, 255, 255}
 	g.menu.newMinLightRGB = [3]float32{
 		float32(g.minLightRGB.R) * 1 / 255, float32(g.minLightRGB.G) * 1 / 255, float32(g.minLightRGB.B) * 1 / 255,
@@ -147,6 +131,8 @@ func (g *Game) openMenu() {
 	g.menu.newMaxLightRGB = [3]float32{
 		float32(g.maxLightRGB.R) * 1 / 255, float32(g.maxLightRGB.G) * 1 / 255, float32(g.maxLightRGB.B) * 1 / 255,
 	}
+
+	g.menu.window.RequestRelayout()
 }
 
 func (g *Game) generateMenuResolutions() []MenuResolution {
