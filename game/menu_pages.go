@@ -57,12 +57,16 @@ func displayPage(menu *DemoMenu) *page {
 	c := newPageContentContainer()
 	res := menu.res
 
+	// resolution combo box and label
 	resolutionRow := widget.NewContainer(
 		widget.ContainerOpts.Layout(widget.NewRowLayout(
 			widget.RowLayoutOpts.Spacing(20),
 		)),
 	)
 	c.AddChild(resolutionRow)
+
+	resolutionLabel := widget.NewLabel(widget.LabelOpts.Text("Resolution", res.label.face, res.label.text))
+	resolutionRow.AddChild(resolutionLabel)
 
 	resolutions := []interface{}{}
 	var selectedResolution interface{}
@@ -82,7 +86,7 @@ func displayPage(menu *DemoMenu) *page {
 		resolutions = append([]interface{}{r}, resolutions...)
 	}
 
-	cb := newListComboButton(
+	resolutionCombo := newListComboButton(
 		resolutions,
 		selectedResolution,
 		func(e interface{}) string {
@@ -96,16 +100,56 @@ func displayPage(menu *DemoMenu) *page {
 			menu.game.setResolution(r.width, r.height)
 		},
 		res)
-	resolutionRow.AddChild(cb)
+	resolutionRow.AddChild(resolutionCombo)
 
-	resolutionLabel := widget.NewLabel(widget.LabelOpts.Text("Resolution", res.label.face, res.label.text))
-	resolutionRow.AddChild(resolutionLabel)
+	// render scaling combo box
+	scalingRow := widget.NewContainer(
+		widget.ContainerOpts.Layout(widget.NewRowLayout(
+			widget.RowLayoutOpts.Spacing(20),
+		)),
+	)
+	c.AddChild(scalingRow)
 
+	scalingLabel := widget.NewLabel(widget.LabelOpts.Text("Render Scaling", res.label.face, res.label.text))
+	scalingRow.AddChild(scalingLabel)
+
+	scalings := []interface{}{
+		0.25,
+		0.5,
+		0.75,
+		1.0,
+	}
+
+	var selectedScaling interface{}
+	for _, s := range scalings {
+		if s == menu.game.renderScale {
+			selectedScaling = s
+		}
+	}
+
+	scalingCombo := newListComboButton(
+		scalings,
+		selectedScaling,
+		func(e interface{}) string {
+			return fmt.Sprintf("%0.0f%%", e.(float64)*100)
+		},
+		func(e interface{}) string {
+			return fmt.Sprintf("%0.0f%%", e.(float64)*100)
+		},
+		func(args *widget.ListComboButtonEntrySelectedEventArgs) {
+			s := args.Entry.(float64)
+			menu.game.setRenderScale(s)
+		},
+		res)
+	scalingRow.AddChild(scalingCombo)
+
+	// fullscreen checkbox
 	fsCheckbox := newCheckbox("Fullscreen", menu.game.fullscreen, func(args *widget.CheckboxChangedEventArgs) {
 		menu.game.setFullscreen(args.State == widget.WidgetChecked)
 	}, res)
 	c.AddChild(fsCheckbox)
 
+	// vsync checkbox
 	vsCheckbox := newCheckbox("Use VSync", menu.game.vsync, func(args *widget.CheckboxChangedEventArgs) {
 		menu.game.setVsyncEnabled(args.State == widget.WidgetChecked)
 	}, res)
