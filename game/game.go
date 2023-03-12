@@ -146,7 +146,7 @@ func NewGame() *Game {
 
 	//--init camera and renderer--//
 	g.camera = raycaster.NewCamera(g.width, g.height, texWidth, g.mapObj, g.tex)
-	g.camera.SetRenderDistance(g.renderDistance)
+	g.setRenderDistance(g.renderDistance)
 
 	g.camera.SetFloorTexture(getTextureFromFile("floor.png"))
 	g.camera.SetSkyTexture(getTextureFromFile("sky.png"))
@@ -448,6 +448,11 @@ func (g *Game) setRenderScale(renderScale float64) {
 	if g.camera != nil {
 		g.camera.SetViewSize(g.width, g.height)
 	}
+}
+
+func (g *Game) setRenderDistance(renderDistance float64) {
+	g.renderDistance = renderDistance
+	g.camera.SetRenderDistance(g.renderDistance)
 }
 
 func (g *Game) setVsyncEnabled(enableVsync bool) {

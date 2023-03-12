@@ -143,6 +143,80 @@ func displayPage(menu *DemoMenu) *page {
 		res)
 	scalingRow.AddChild(scalingCombo)
 
+	// horizontal FOV slider
+	fovRow := widget.NewContainer(
+		widget.ContainerOpts.Layout(widget.NewRowLayout(
+			widget.RowLayoutOpts.Spacing(20),
+		)),
+	)
+	c.AddChild(fovRow)
+
+	fovLabel := widget.NewLabel(widget.LabelOpts.Text("Horizontal FOV", res.label.face, res.label.text))
+	fovRow.AddChild(fovLabel)
+
+	var fovValueText *widget.Label
+
+	fovSlider := widget.NewSlider(
+		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+			Position: widget.RowLayoutPositionCenter,
+		}), widget.WidgetOpts.MinSize(200, 6)),
+		widget.SliderOpts.MinMax(60, 120),
+		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
+		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),
+		widget.SliderOpts.TrackOffset(5),
+		widget.SliderOpts.ChangedHandler(func(args *widget.SliderChangedEventArgs) {
+			fovValueText.Label = fmt.Sprintf("%d", args.Current)
+			menu.game.setFovAngle(float64(args.Current))
+		}),
+	)
+	fovSlider.Current = int(menu.game.fovDegrees)
+	fovRow.AddChild(fovSlider)
+
+	fovValueText = widget.NewLabel(
+		widget.LabelOpts.TextOpts(widget.TextOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+			Position: widget.RowLayoutPositionCenter,
+		}))),
+		widget.LabelOpts.Text(fmt.Sprintf("%d", fovSlider.Current), res.label.face, res.label.text),
+	)
+	fovRow.AddChild(fovValueText)
+
+	// render distance slider
+	distanceRow := widget.NewContainer(
+		widget.ContainerOpts.Layout(widget.NewRowLayout(
+			widget.RowLayoutOpts.Spacing(20),
+		)),
+	)
+	c.AddChild(distanceRow)
+
+	distanceLabel := widget.NewLabel(widget.LabelOpts.Text("Render Distance", res.label.face, res.label.text))
+	distanceRow.AddChild(distanceLabel)
+
+	var distanceValueText *widget.Label
+
+	distanceSlider := widget.NewSlider(
+		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+			Position: widget.RowLayoutPositionCenter,
+		}), widget.WidgetOpts.MinSize(200, 6)),
+		widget.SliderOpts.MinMax(-1, 100),
+		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
+		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),
+		widget.SliderOpts.TrackOffset(5),
+		widget.SliderOpts.ChangedHandler(func(args *widget.SliderChangedEventArgs) {
+			distanceValueText.Label = fmt.Sprintf("%d", args.Current)
+			menu.game.setRenderDistance(float64(args.Current))
+		}),
+	)
+	distanceSlider.Current = int(menu.game.renderDistance)
+	distanceRow.AddChild(distanceSlider)
+
+	distanceValueText = widget.NewLabel(
+		widget.LabelOpts.TextOpts(widget.TextOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+			Position: widget.RowLayoutPositionCenter,
+		}))),
+		widget.LabelOpts.Text(fmt.Sprintf("%d", distanceSlider.Current), res.label.face, res.label.text),
+	)
+	distanceRow.AddChild(distanceValueText)
+
 	// fullscreen checkbox
 	fsCheckbox := newCheckbox("Fullscreen", menu.game.fullscreen, func(args *widget.CheckboxChangedEventArgs) {
 		menu.game.setFullscreen(args.State == widget.WidgetChecked)
