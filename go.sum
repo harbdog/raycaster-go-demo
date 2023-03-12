@@ -54,6 +54,8 @@ github.com/ebitengine/purego v0.1.1 h1:HI8nW+LniW9Yb34k34jBs8nz+PNzsw68o7JF8jWFH
 github.com/ebitengine/purego v0.1.1/go.mod h1:Eh8I3yvknDYZeCuXH9kRNaPuHEwvXDCk378o9xszmHg=
 github.com/ebitenui/ebitenui v0.4.1 h1:Gmc87daENbsE4sLrRFTPQlzvi1Q4VK+xCXNaGm/ttec=
 github.com/ebitenui/ebitenui v0.4.1/go.mod h1:6N/X7+q16oFS1sGZczpo7v9Cu9rZEsmMf9977zICP5Y=
+github.com/ebitenui/ebitenui v0.4.2-0.20230312040605-a1aa7778f9b2 h1:jcDf/gukOqvX+GOchAH/gjI8yhIpKSPViiPH849b3RE=
+github.com/ebitenui/ebitenui v0.4.2-0.20230312040605-a1aa7778f9b2/go.mod h1:6N/X7+q16oFS1sGZczpo7v9Cu9rZEsmMf9977zICP5Y=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.4/go.mod h1:6rpuAdCZL397s3pYoYcLgu1mIlRU8Am5FuJP05cCM98=
