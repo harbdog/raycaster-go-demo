@@ -158,15 +158,12 @@ func NewGame() *Game {
 
 	g.zoomFovDepth = 2.0
 
-	// set demo non-default lighting settings
-	g.lightFalloff = -200
-	g.globalIllumination = 500
-	g.minLightRGB = color.NRGBA{R: 76, G: 76, B: 76}
-	g.maxLightRGB = color.NRGBA{R: 255, G: 255, B: 255}
-
-	g.camera.SetLightFalloff(g.lightFalloff)
-	g.camera.SetGlobalIllumination(g.globalIllumination)
-	g.camera.SetLightRGB(g.minLightRGB, g.maxLightRGB)
+	// set demo lighting settings
+	g.setLightFalloff(-200)
+	g.setGlobalIllumination(500)
+	minLightRGB := color.NRGBA{R: 76, G: 76, B: 76}
+	maxLightRGB := color.NRGBA{R: 255, G: 255, B: 255}
+	g.setLightRGB(minLightRGB, maxLightRGB)
 
 	// init menu system
 	g.menu = createMenu(g)
@@ -463,6 +460,12 @@ func (g *Game) setLightFalloff(lightFalloff float64) {
 func (g *Game) setGlobalIllumination(globalIllumination float64) {
 	g.globalIllumination = globalIllumination
 	g.camera.SetGlobalIllumination(g.globalIllumination)
+}
+
+func (g *Game) setLightRGB(minLightRGB, maxLightRGB color.NRGBA) {
+	g.minLightRGB = minLightRGB
+	g.maxLightRGB = maxLightRGB
+	g.camera.SetLightRGB(g.minLightRGB, g.maxLightRGB)
 }
 
 func (g *Game) setVsyncEnabled(enableVsync bool) {
