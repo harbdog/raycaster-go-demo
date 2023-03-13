@@ -455,6 +455,16 @@ func (g *Game) setRenderDistance(renderDistance float64) {
 	g.camera.SetRenderDistance(g.renderDistance)
 }
 
+func (g *Game) setLightFalloff(lightFalloff float64) {
+	g.lightFalloff = lightFalloff
+	g.camera.SetLightFalloff(g.lightFalloff)
+}
+
+func (g *Game) setGlobalIllumination(globalIllumination float64) {
+	g.globalIllumination = globalIllumination
+	g.camera.SetGlobalIllumination(g.globalIllumination)
+}
+
 func (g *Game) setVsyncEnabled(enableVsync bool) {
 	g.vsync = enableVsync
 	if enableVsync {
