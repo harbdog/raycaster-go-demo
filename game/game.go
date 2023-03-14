@@ -34,7 +34,7 @@ const (
 
 // Game - This is the main type for your game.
 type Game struct {
-	menu   DemoMenu
+	menu   *DemoMenu
 	paused bool
 
 	//--create slicer and declare slices--//
@@ -146,7 +146,7 @@ func NewGame() *Game {
 
 	//--init camera and renderer--//
 	g.camera = raycaster.NewCamera(g.width, g.height, texWidth, g.mapObj, g.tex)
-	g.camera.SetRenderDistance(g.renderDistance)
+	g.setRenderDistance(g.renderDistance)
 
 	g.camera.SetFloorTexture(getTextureFromFile("floor.png"))
 	g.camera.SetSkyTexture(getTextureFromFile("sky.png"))
@@ -158,18 +158,15 @@ func NewGame() *Game {
 
 	g.zoomFovDepth = 2.0
 
-	// set demo non-default lighting settings
-	g.lightFalloff = -200
-	g.globalIllumination = 500
-	g.minLightRGB = color.NRGBA{R: 76, G: 76, B: 76}
-	g.maxLightRGB = color.NRGBA{R: 255, G: 255, B: 255}
-
-	g.camera.SetLightFalloff(g.lightFalloff)
-	g.camera.SetGlobalIllumination(g.globalIllumination)
-	g.camera.SetLightRGB(g.minLightRGB, g.maxLightRGB)
+	// set demo lighting settings
+	g.setLightFalloff(-200)
+	g.setGlobalIllumination(500)
+	minLightRGB := color.NRGBA{R: 76, G: 76, B: 76}
+	maxLightRGB := color.NRGBA{R: 255, G: 255, B: 255}
+	g.setLightRGB(minLightRGB, maxLightRGB)
 
 	// init menu system
-	g.menu = mainMenu()
+	g.menu = createMenu(g)
 
 	return g
 }
@@ -286,7 +283,7 @@ func (g *Game) Update() error {
 	}
 
 	// update the menu (if active)
-	g.menu.update(g)
+	g.menu.update()
 
 	return nil
 }
@@ -448,6 +445,27 @@ func (g *Game) setRenderScale(renderScale float64) {
 	if g.camera != nil {
 		g.camera.SetViewSize(g.width, g.height)
 	}
+}
+
+func (g *Game) setRenderDistance(renderDistance float64) {
+	g.renderDistance = renderDistance
+	g.camera.SetRenderDistance(g.renderDistance)
+}
+
+func (g *Game) setLightFalloff(lightFalloff float64) {
+	g.lightFalloff = lightFalloff
+	g.camera.SetLightFalloff(g.lightFalloff)
+}
+
+func (g *Game) setGlobalIllumination(globalIllumination float64) {
+	g.globalIllumination = globalIllumination
+	g.camera.SetGlobalIllumination(g.globalIllumination)
+}
+
+func (g *Game) setLightRGB(minLightRGB, maxLightRGB color.NRGBA) {
+	g.minLightRGB = minLightRGB
+	g.maxLightRGB = maxLightRGB
+	g.camera.SetLightRGB(g.minLightRGB, g.maxLightRGB)
 }
 
 func (g *Game) setVsyncEnabled(enableVsync bool) {
