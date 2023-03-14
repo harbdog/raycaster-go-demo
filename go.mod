@@ -3,7 +3,7 @@ module github.com/harbdog/raycaster-go-demo
 go 1.17
 
 require (
-	github.com/ebitenui/ebitenui v0.4.2-0.20230312040605-a1aa7778f9b2
+	github.com/ebitenui/ebitenui v0.4.2
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/hajimehoshi/ebiten/v2 v2.4.16
 	github.com/harbdog/raycaster-go v1.8.2
