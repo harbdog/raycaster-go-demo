@@ -20,7 +20,8 @@ To install and run the demo from source:
 
 ## Controls
 
-* Press `Escape` key (or hold `CTRL`) to toggle mouse cursor capture (needed to close the window)
+* Press `Escape` key to show demo settings menu (also to exit the game)
+* Hold `CTRL` key to release mouse cursor capture
 * Move the mouse to rotate and pitch view
 * Move and strafe using `WASD` or `Arrow Keys`
 * Click left mouse button to fire current weapon
