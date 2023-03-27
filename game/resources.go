@@ -107,7 +107,7 @@ func (g *Game) loadSprites() {
 
 	// preload projectile sprites
 	chargedBoltImg := g.tex.textures[17]
-	chargedBoltWidth, _ := chargedBoltImg.Size()
+	chargedBoltWidth := chargedBoltImg.Bounds().Dx()
 	chargedBoltCols, chargedBoltRows := 12, 1
 	chargedBoltScale := 0.75
 	// in pixels, radius to use for collision testing
@@ -120,7 +120,7 @@ func (g *Game) loadSprites() {
 	)
 
 	redBoltImg := g.tex.textures[22]
-	redBoltWidth, _ := redBoltImg.Size()
+	redBoltWidth := redBoltImg.Bounds().Dx()
 	redBoltScale := 0.25
 	// in pixels, radius to use for collision testing
 	redBoltPxRadius := 4.0
@@ -155,7 +155,7 @@ func (g *Game) loadSprites() {
 
 	// animated single facing sorcerer
 	sorcImg := g.tex.textures[15]
-	sorcWidth, sorcHeight := sorcImg.Size()
+	sorcWidth, sorcHeight := sorcImg.Bounds().Dx(), sorcImg.Bounds().Dy()
 	sorcCols, sorcRows := 10, 1
 	sorcScale := 1.25
 	// in pixels, radius and height to use for collision testing
@@ -184,7 +184,7 @@ func (g *Game) loadSprites() {
 		geom.Radians(0):   7,
 	}
 	walkerImg := g.tex.textures[19]
-	walkerWidth, walkerHeight := walkerImg.Size()
+	walkerWidth, walkerHeight := walkerImg.Bounds().Dx(), walkerImg.Bounds().Dy()
 	walkerCols, walkerRows := 4, 8
 	walkerScale := 0.75
 	// in pixels, radius and height to use for collision testing
@@ -211,7 +211,7 @@ func (g *Game) loadSprites() {
 		geom.Radians(0):   0,
 	}
 	batImg := g.tex.textures[24]
-	batWidth, batHeight := batImg.Size()
+	batWidth, batHeight := batImg.Bounds().Dx(), batImg.Bounds().Dy()
 	batCols, batRows := 3, 4
 	batScale := 0.25
 	// in pixels, radius and height to use for collision testing
@@ -241,7 +241,7 @@ func (g *Game) loadSprites() {
 
 	// rock that can be jumped over but not walked through
 	rockImg := g.tex.textures[8]
-	rockWidth, rockHeight := rockImg.Size()
+	rockWidth, rockHeight := rockImg.Bounds().Dx(), rockImg.Bounds().Dy()
 	rockScale := 0.4
 	rockPxRadius, rockPxHeight := 24.0, 35.0
 	rockCollisionRadius := (rockScale * rockPxRadius) / float64(rockWidth)
