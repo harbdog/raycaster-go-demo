@@ -16,6 +16,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 	"github.com/harbdog/raycaster-go"
 	"github.com/harbdog/raycaster-go/geom"
 	"github.com/harbdog/raycaster-go/geom3d"
@@ -328,7 +329,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		)
 
 		// apply lighting setting
-		op.ColorM.Scale(float64(g.maxLightRGB.R)/255, float64(g.maxLightRGB.G)/255, float64(g.maxLightRGB.B)/255, 1)
+		op.ColorScale.Scale(float32(g.maxLightRGB.R)/255, float32(g.maxLightRGB.G)/255, float32(g.maxLightRGB.B)/255, 1)
 
 		screen.DrawImage(w.Texture(), op)
 	}
@@ -404,13 +405,10 @@ func drawSpriteBox(screen *ebiten.Image, sprite *model.Sprite) {
 		return
 	}
 
-	minX, minY := float64(r.Min.X), float64(r.Min.Y)
-	maxX, maxY := float64(r.Max.X), float64(r.Max.Y)
+	minX, minY := float32(r.Min.X), float32(r.Min.Y)
+	maxX, maxY := float32(r.Max.X), float32(r.Max.Y)
 
-	ebitenutil.DrawLine(screen, minX, minY, minX, maxY, color.RGBA{255, 0, 0, 255})
-	ebitenutil.DrawLine(screen, minX, maxY, maxX, maxY, color.RGBA{255, 0, 0, 255})
-	ebitenutil.DrawLine(screen, maxX, maxY, maxX, minY, color.RGBA{255, 0, 0, 255})
-	ebitenutil.DrawLine(screen, maxX, minY, minX, minY, color.RGBA{255, 0, 0, 255})
+	vector.StrokeRect(screen, minX, minY, maxX-minX, maxY-minY, 1, color.RGBA{255, 0, 0, 255}, false)
 }
 
 func drawSpriteIndicator(screen *ebiten.Image, sprite *model.Sprite) {
@@ -419,12 +417,12 @@ func drawSpriteIndicator(screen *ebiten.Image, sprite *model.Sprite) {
 		return
 	}
 
-	dX, dY := float64(r.Dx())/8, float64(r.Dy())/8
-	midX, minY := float64(r.Max.X)-float64(r.Dx())/2, float64(r.Min.Y)-dY
+	dX, dY := float32(r.Dx())/8, float32(r.Dy())/8
+	midX, minY := float32(r.Max.X)-float32(r.Dx())/2, float32(r.Min.Y)-dY
 
-	ebitenutil.DrawLine(screen, midX, minY+dY, midX-dX, minY, color.RGBA{0, 255, 0, 255})
-	ebitenutil.DrawLine(screen, midX, minY+dY, midX+dX, minY, color.RGBA{0, 255, 0, 255})
-	ebitenutil.DrawLine(screen, midX-dX, minY, midX+dX, minY, color.RGBA{0, 255, 0, 255})
+	vector.StrokeLine(screen, midX, minY+dY, midX-dX, minY, 1, color.RGBA{0, 255, 0, 255}, false)
+	vector.StrokeLine(screen, midX, minY+dY, midX+dX, minY, 1, color.RGBA{0, 255, 0, 255}, false)
+	vector.StrokeLine(screen, midX-dX, minY, midX+dX, minY, 1, color.RGBA{0, 255, 0, 255}, false)
 }
 
 func (g *Game) setFullscreen(fullscreen bool) {
@@ -470,11 +468,7 @@ func (g *Game) setLightRGB(minLightRGB, maxLightRGB color.NRGBA) {
 
 func (g *Game) setVsyncEnabled(enableVsync bool) {
 	g.vsync = enableVsync
-	if enableVsync {
-		ebiten.SetFPSMode(ebiten.FPSModeVsyncOn)
-	} else {
-		ebiten.SetFPSMode(ebiten.FPSModeVsyncOffMaximum)
-	}
+	ebiten.SetVsyncEnabled(enableVsync)
 }
 
 func (g *Game) setFovAngle(fovDegrees float64) {
