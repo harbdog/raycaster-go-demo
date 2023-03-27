@@ -201,7 +201,7 @@ func (g *Game) initConfig() {
 
 	err := viper.ReadInConfig()
 	if err != nil && g.debug {
-		log.Print(err)
+		fmt.Print(err)
 	}
 
 	// get config values
@@ -224,18 +224,18 @@ func (g *Game) SaveConfig() error {
 	userConfigPath += "/.raycaster-go-demo"
 
 	userConfig := userConfigPath + "/demo-config.json"
-	log.Print("Saving config file ", userConfig)
+	fmt.Print("Saving config file ", userConfig)
 
 	if _, err := os.Stat(userConfigPath); os.IsNotExist(err) {
 		err = os.MkdirAll(userConfigPath, os.ModePerm)
 		if err != nil {
-			log.Print(err)
+			fmt.Print(err)
 			return err
 		}
 	}
 	err := viper.WriteConfigAs(userConfig)
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 	}
 
 	return err
