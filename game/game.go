@@ -57,8 +57,9 @@ type Game struct {
 
 	player *model.Player
 
-	//--define camera and renderer--//
+	//--define camera and render scene--//
 	camera *raycaster.Camera
+	scene  *ebiten.Image
 
 	mouseMode      MouseMode
 	mouseX, mouseY int
@@ -259,7 +260,7 @@ func (g *Game) Run() {
 // Layout takes the outside size (e.g., the window size) and returns the (logical) screen size.
 // If you don't have to adjust the screen size with the outside size, just return a fixed size.
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	w, h := int(float64(g.screenWidth)*g.renderScale), int(float64(g.screenHeight)*g.renderScale)
+	w, h := int(float64(g.screenWidth)), int(float64(g.screenHeight))
 	g.menu.layout(w, h)
 	return int(w), int(h)
 }
@@ -312,8 +313,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// Update camera (calculate raycast)
 	g.camera.Update(raycastSprites)
 
-	// Render raycast to screen
-	g.camera.Draw(screen)
+	// Render raycast scene
+	g.camera.Draw(g.scene)
 
 	// draw equipped weapon
 	if g.player.Weapon != nil {
@@ -331,21 +332,21 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		// apply lighting setting
 		op.ColorScale.Scale(float32(g.maxLightRGB.R)/255, float32(g.maxLightRGB.G)/255, float32(g.maxLightRGB.B)/255, 1)
 
-		screen.DrawImage(w.Texture(), op)
+		g.scene.DrawImage(w.Texture(), op)
 	}
 
 	if g.showSpriteBoxes {
 		// draw sprite screen indicators to show we know where it was raycasted (must occur after camera.Update)
 		for sprite := range g.sprites {
-			drawSpriteBox(screen, sprite)
+			drawSpriteBox(g.scene, sprite)
 		}
 
 		for sprite := range g.projectiles {
-			drawSpriteBox(screen, sprite.Sprite)
+			drawSpriteBox(g.scene, sprite.Sprite)
 		}
 
 		for sprite := range g.effects {
-			drawSpriteBox(screen, sprite.Sprite)
+			drawSpriteBox(g.scene, sprite.Sprite)
 		}
 	}
 
@@ -354,11 +355,19 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	if convergenceSprite != nil {
 		for sprite := range g.sprites {
 			if convergenceSprite == sprite {
-				drawSpriteIndicator(screen, sprite)
+				drawSpriteIndicator(g.scene, sprite)
 				break
 			}
 		}
 	}
+
+	// draw raycasted scene
+	op := &ebiten.DrawImageOptions{}
+	if g.renderScale < 1 {
+		op.Filter = ebiten.FilterNearest
+		op.GeoM.Scale(1/g.renderScale, 1/g.renderScale)
+	}
+	screen.DrawImage(g.scene, op)
 
 	// draw minimap
 	mm := g.miniMap()
@@ -367,7 +376,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		op := &ebiten.DrawImageOptions{}
 		op.Filter = ebiten.FilterNearest
 
-		op.GeoM.Scale(5.0*g.renderScale, 5.0*g.renderScale)
+		op.GeoM.Scale(5.0, 5.0)
 		op.GeoM.Translate(0, 50)
 		screen.DrawImage(mmImg, op)
 	}
@@ -377,11 +386,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		op := &ebiten.DrawImageOptions{}
 		op.Filter = ebiten.FilterNearest
 
-		crosshairScale := g.crosshairs.Scale() * g.renderScale
+		crosshairScale := g.crosshairs.Scale()
 		op.GeoM.Scale(crosshairScale, crosshairScale)
 		op.GeoM.Translate(
-			float64(g.width)/2-float64(g.crosshairs.W)*crosshairScale/2,
-			float64(g.height)/2-float64(g.crosshairs.H)*crosshairScale/2,
+			float64(g.screenWidth)/2-float64(g.crosshairs.W)*crosshairScale/2,
+			float64(g.screenHeight)/2-float64(g.crosshairs.H)*crosshairScale/2,
 		)
 		screen.DrawImage(g.crosshairs.Texture(), op)
 
@@ -443,6 +452,7 @@ func (g *Game) setRenderScale(renderScale float64) {
 	if g.camera != nil {
 		g.camera.SetViewSize(g.width, g.height)
 	}
+	g.scene = ebiten.NewImage(g.width, g.height)
 }
 
 func (g *Game) setRenderDistance(renderDistance float64) {
