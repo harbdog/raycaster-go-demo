@@ -99,7 +99,7 @@ func displayPage(menu *DemoMenu) *page {
 		},
 		func(args *widget.ListComboButtonEntrySelectedEventArgs) {
 			r := args.Entry.(MenuResolution)
-			if menu.game.screenWidth != r.width && menu.game.screenHeight != r.height {
+			if menu.game.screenWidth != r.width || menu.game.screenHeight != r.height {
 				menu.game.setResolution(r.width, r.height)
 			}
 		},
