@@ -62,6 +62,12 @@ func createMenu(g *Game) *DemoMenu {
 		resolutions: g.generateMenuResolutions(),
 	}
 
+	menu.initMenu()
+
+	return menu
+}
+
+func (m *DemoMenu) initMenu() {
 	root := widget.NewContainer(
 		widget.ContainerOpts.Layout(widget.NewGridLayout(
 			// It is using a GridLayout with a single column
@@ -78,18 +84,18 @@ func createMenu(g *Game) *DemoMenu {
 			}),
 			// Spacing defines how much space to put between each column and row
 			widget.GridLayoutOpts.Spacing(0, 20))),
-		widget.ContainerOpts.BackgroundImage(res.background),
+		widget.ContainerOpts.BackgroundImage(m.res.background),
 	)
 
 	// window title
-	titleBar := titleBarContainer(menu)
+	titleBar := titleBarContainer(m)
 
 	// settings pages
-	settings := settingsContainer(menu)
+	settings := settingsContainer(m)
 	root.AddChild(settings)
 
 	// footer
-	footer := footerContainer(menu)
+	footer := footerContainer(m)
 	root.AddChild(footer)
 
 	ww, wh := ebiten.WindowSize()
@@ -97,7 +103,7 @@ func createMenu(g *Game) *DemoMenu {
 		widget.WindowOpts.Modal(),
 		widget.WindowOpts.Contents(root),
 		widget.WindowOpts.TitleBar(titleBar, 30),
-		widget.WindowOpts.MinSize(500, 200),
+		widget.WindowOpts.MinSize(ww/2, wh/2),
 		widget.WindowOpts.MaxSize(ww, wh),
 		widget.WindowOpts.Resizeable(),
 		widget.WindowOpts.ResizeHandler(func(args *widget.WindowChangedEventArgs) {
@@ -112,10 +118,11 @@ func createMenu(g *Game) *DemoMenu {
 	r := image.Rect(0, 0, 2*ww/3, 2*wh/3)
 	r = r.Add(image.Point{ww / 8, wh / 16})
 	window.SetLocation(r)
-	ui.AddWindow(window)
-	menu.window = window
-
-	return menu
+	if m.window != nil {
+		m.window.Close()
+	}
+	m.ui.AddWindow(window)
+	m.window = window
 }
 
 func (g *Game) openMenu() {
@@ -132,7 +139,7 @@ func (g *Game) openMenu() {
 		float32(g.maxLightRGB.R) * 1 / 255, float32(g.maxLightRGB.G) * 1 / 255, float32(g.maxLightRGB.B) * 1 / 255,
 	}
 
-	g.menu.window.RequestRelayout()
+	g.menu.initMenu()
 }
 
 func (g *Game) generateMenuResolutions() []MenuResolution {
@@ -147,8 +154,6 @@ func (g *Game) generateMenuResolutions() []MenuResolution {
 	}
 
 	widths := []int{
-		320,
-		480,
 		640,
 		800,
 		960,
