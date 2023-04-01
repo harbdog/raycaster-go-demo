@@ -74,7 +74,7 @@ func displayPage(menu *DemoMenu) *page {
 	var selectedResolution interface{}
 	for _, r := range menu.resolutions {
 		resolutions = append(resolutions, r)
-		if menu.game.width == r.width && menu.game.height == r.height {
+		if menu.game.screenWidth == r.width && menu.game.screenHeight == r.height {
 			selectedResolution = r
 		}
 	}
@@ -88,6 +88,7 @@ func displayPage(menu *DemoMenu) *page {
 		resolutions = append([]interface{}{r}, resolutions...)
 	}
 
+	var fovSlider *widget.Slider
 	resolutionCombo := newListComboButton(
 		resolutions,
 		selectedResolution,
@@ -101,10 +102,50 @@ func displayPage(menu *DemoMenu) *page {
 			r := args.Entry.(MenuResolution)
 			if menu.game.screenWidth != r.width || menu.game.screenHeight != r.height {
 				menu.game.setResolution(r.width, r.height)
+
+				// also pre-select ideal FOV for the aspect ratio
+				fovSlider.Current = r.aspectRatio.fov
 			}
 		},
 		res)
 	resolutionRow.AddChild(resolutionCombo)
+
+	// horizontal FOV slider
+	fovRow := widget.NewContainer(
+		widget.ContainerOpts.Layout(widget.NewRowLayout(
+			widget.RowLayoutOpts.Spacing(20),
+		)),
+	)
+	c.AddChild(fovRow)
+
+	fovLabel := widget.NewLabel(widget.LabelOpts.Text("Horizontal FOV", res.label.face, res.label.text))
+	fovRow.AddChild(fovLabel)
+
+	var fovValueText *widget.Label
+
+	fovSlider = widget.NewSlider(
+		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+			Position: widget.RowLayoutPositionCenter,
+		}), widget.WidgetOpts.MinSize(200, 6)),
+		widget.SliderOpts.MinMax(60, 120),
+		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
+		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),
+		widget.SliderOpts.TrackOffset(5),
+		widget.SliderOpts.ChangedHandler(func(args *widget.SliderChangedEventArgs) {
+			fovValueText.Label = fmt.Sprintf("%d", args.Current)
+			menu.game.setFovAngle(float64(args.Current))
+		}),
+	)
+	fovSlider.Current = int(menu.game.fovDegrees)
+	fovRow.AddChild(fovSlider)
+
+	fovValueText = widget.NewLabel(
+		widget.LabelOpts.TextOpts(widget.TextOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+			Position: widget.RowLayoutPositionCenter,
+		}))),
+		widget.LabelOpts.Text(fmt.Sprintf("%d", fovSlider.Current), res.label.face, res.label.text),
+	)
+	fovRow.AddChild(fovValueText)
 
 	// render scaling combo box
 	scalingRow := widget.NewContainer(
@@ -146,43 +187,6 @@ func displayPage(menu *DemoMenu) *page {
 		},
 		res)
 	scalingRow.AddChild(scalingCombo)
-
-	// horizontal FOV slider
-	fovRow := widget.NewContainer(
-		widget.ContainerOpts.Layout(widget.NewRowLayout(
-			widget.RowLayoutOpts.Spacing(20),
-		)),
-	)
-	c.AddChild(fovRow)
-
-	fovLabel := widget.NewLabel(widget.LabelOpts.Text("Horizontal FOV", res.label.face, res.label.text))
-	fovRow.AddChild(fovLabel)
-
-	var fovValueText *widget.Label
-
-	fovSlider := widget.NewSlider(
-		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
-			Position: widget.RowLayoutPositionCenter,
-		}), widget.WidgetOpts.MinSize(200, 6)),
-		widget.SliderOpts.MinMax(60, 120),
-		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
-		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),
-		widget.SliderOpts.TrackOffset(5),
-		widget.SliderOpts.ChangedHandler(func(args *widget.SliderChangedEventArgs) {
-			fovValueText.Label = fmt.Sprintf("%d", args.Current)
-			menu.game.setFovAngle(float64(args.Current))
-		}),
-	)
-	fovSlider.Current = int(menu.game.fovDegrees)
-	fovRow.AddChild(fovSlider)
-
-	fovValueText = widget.NewLabel(
-		widget.LabelOpts.TextOpts(widget.TextOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
-			Position: widget.RowLayoutPositionCenter,
-		}))),
-		widget.LabelOpts.Text(fmt.Sprintf("%d", fovSlider.Current), res.label.face, res.label.text),
-	)
-	fovRow.AddChild(fovValueText)
 
 	// fullscreen checkbox
 	fsCheckbox := newCheckbox("Fullscreen", menu.game.fullscreen, func(args *widget.CheckboxChangedEventArgs) {

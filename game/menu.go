@@ -31,7 +31,7 @@ type MenuResolution struct {
 }
 
 type MenuAspectRatio struct {
-	w, h int
+	w, h, fov int
 }
 
 func (r MenuResolution) String() string {
@@ -146,11 +146,11 @@ func (g *Game) generateMenuResolutions() []MenuResolution {
 	resolutions := make([]MenuResolution, 0)
 
 	ratios := []MenuAspectRatio{
-		{3, 2},
-		{4, 3},
-		{5, 4},
-		{16, 9},
-		{21, 9},
+		{5, 4, 64},
+		{4, 3, 68},
+		{3, 2, 74},
+		{16, 9, 84},
+		{21, 9, 100},
 	}
 
 	widths := []int{
