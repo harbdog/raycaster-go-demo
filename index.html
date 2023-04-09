@@ -25,7 +25,7 @@
 			const response = await fetch("raycaster-go-demo.wasm");
 			const buffer = await response.arrayBuffer();
 			const obj = await WebAssembly.instantiate(buffer, go.importObject);
-			await new Promise(r => setTimeout(r, 500));
+			await new Promise(r => setTimeout(r, 5000));
 			go.run(obj.instance);
 			document.getElementById("loading_text").style.display = "none";
 		}
