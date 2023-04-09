@@ -1,6 +1,7 @@
 package game
 
 import (
+	"embed"
 	"image"
 	"image/color"
 	"log"
@@ -12,6 +13,9 @@ import (
 	"github.com/harbdog/raycaster-go-demo/game/model"
 	"github.com/harbdog/raycaster-go/geom"
 )
+
+//go:embed resources
+var embedded embed.FS
 
 // loadContent will be called once per game and is the place to load
 // all of your content.
@@ -53,10 +57,19 @@ func (g *Game) loadContent() {
 	}
 }
 
+func newImageFromFile(path string) (*ebiten.Image, image.Image, error) {
+	f, err := embedded.Open(filepath.ToSlash(path))
+	if err != nil {
+		return nil, nil, err
+	}
+	defer f.Close()
+	eb, im, err := ebitenutil.NewImageFromReader(f)
+	return eb, im, err
+}
+
 func getRGBAFromFile(texFile string) *image.RGBA {
 	var rgba *image.RGBA
-	resourcePath := filepath.Join("game", "resources", "textures")
-	_, tex, err := ebitenutil.NewImageFromFile(filepath.Join(resourcePath, texFile))
+	_, tex, err := newImageFromFile("resources/textures/" + texFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -75,8 +88,7 @@ func getRGBAFromFile(texFile string) *image.RGBA {
 }
 
 func getTextureFromFile(texFile string) *ebiten.Image {
-	resourcePath := filepath.Join("game", "resources", "textures")
-	eImg, _, err := ebitenutil.NewImageFromFile(filepath.Join(resourcePath, texFile))
+	eImg, _, err := newImageFromFile("resources/textures/" + texFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -84,8 +96,7 @@ func getTextureFromFile(texFile string) *ebiten.Image {
 }
 
 func getSpriteFromFile(sFile string) *ebiten.Image {
-	resourcePath := filepath.Join("game", "resources", "sprites")
-	eImg, _, err := ebitenutil.NewImageFromFile(filepath.Join(resourcePath, sFile))
+	eImg, _, err := newImageFromFile("resources/sprites/" + sFile)
 	if err != nil {
 		log.Fatal(err)
 	}
