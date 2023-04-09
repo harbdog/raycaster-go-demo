@@ -98,7 +98,7 @@ func (m *DemoMenu) initMenu() {
 	footer := footerContainer(m)
 	root.AddChild(footer)
 
-	ww, wh := ebiten.WindowSize()
+	ww, wh := m.game.screenWidth, m.game.screenHeight
 	window := widget.NewWindow(
 		widget.WindowOpts.Modal(),
 		widget.WindowOpts.Contents(root),
