@@ -34,20 +34,25 @@ func gamePage(menu *DemoMenu) *page {
 	)
 	c.AddChild(resume)
 
-	c.AddChild(newSeparator(res, widget.RowLayoutData{
-		Stretch: true,
-	}))
-
-	exit := widget.NewButton(
-		widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+	if menu.game.wasm {
+		// exit in browser kills but freezes the application, users can just close the tab/window
+	} else {
+		// show in game exit button
+		c.AddChild(newSeparator(res, widget.RowLayoutData{
 			Stretch: true,
-		})),
-		widget.ButtonOpts.Image(res.button.image),
-		widget.ButtonOpts.Text("Exit", res.button.face, res.button.text),
-		widget.ButtonOpts.TextPadding(res.button.padding),
-		widget.ButtonOpts.ClickedHandler(func(args *widget.ButtonClickedEventArgs) { exit(0) }),
-	)
-	c.AddChild(exit)
+		}))
+
+		exit := widget.NewButton(
+			widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+				Stretch: true,
+			})),
+			widget.ButtonOpts.Image(res.button.image),
+			widget.ButtonOpts.Text("Exit", res.button.face, res.button.text),
+			widget.ButtonOpts.TextPadding(res.button.padding),
+			widget.ButtonOpts.ClickedHandler(func(args *widget.ButtonClickedEventArgs) { exit(0) }),
+		)
+		c.AddChild(exit)
+	}
 
 	return &page{
 		title:   "Game",
