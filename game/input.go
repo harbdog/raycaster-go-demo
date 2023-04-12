@@ -17,7 +17,17 @@ const (
 )
 
 func (g *Game) handleInput() {
-	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+	if g.wasm {
+		// browsers use Escape key to release captured cursor and do not input key press, special handling needed
+		if ebiten.CursorMode() == ebiten.CursorModeVisible && !g.menu.active {
+			g.openMenu()
+		}
+
+		if ebiten.CursorMode() == ebiten.CursorModeCaptured && g.menu.active {
+			g.closeMenu()
+		}
+
+	} else if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
 		if g.menu.active {
 			g.closeMenu()
 		} else {
@@ -41,7 +51,8 @@ func (g *Game) handleInput() {
 	}
 
 	switch {
-	case ebiten.IsKeyPressed(ebiten.KeyControl):
+	case ebiten.IsKeyPressed(ebiten.KeyControl) && !g.wasm:
+		// debug cursor mode not intended for browser purposes
 		if g.mouseMode != MouseModeCursor {
 			ebiten.SetCursorMode(ebiten.CursorModeVisible)
 			g.mouseMode = MouseModeCursor

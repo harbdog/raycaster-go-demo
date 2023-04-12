@@ -125,23 +125,6 @@ func (m *DemoMenu) initMenu() {
 	m.window = window
 }
 
-func (g *Game) openMenu() {
-	g.paused = true
-	g.menu.active = true
-	g.mouseMode = MouseModeCursor
-	ebiten.SetCursorMode(ebiten.CursorModeVisible)
-
-	// for color menu items [1, 1, 1] represents NRGBA{255, 255, 255}
-	g.menu.newMinLightRGB = [3]float32{
-		float32(g.minLightRGB.R) * 1 / 255, float32(g.minLightRGB.G) * 1 / 255, float32(g.minLightRGB.B) * 1 / 255,
-	}
-	g.menu.newMaxLightRGB = [3]float32{
-		float32(g.maxLightRGB.R) * 1 / 255, float32(g.maxLightRGB.G) * 1 / 255, float32(g.maxLightRGB.B) * 1 / 255,
-	}
-
-	g.menu.initMenu()
-}
-
 func (g *Game) generateMenuResolutions() []MenuResolution {
 	resolutions := make([]MenuResolution, 0)
 
@@ -177,9 +160,28 @@ func (g *Game) generateMenuResolutions() []MenuResolution {
 	return resolutions
 }
 
+func (g *Game) openMenu() {
+	g.paused = true
+	g.menu.active = true
+	g.mouseMode = MouseModeCursor
+	ebiten.SetCursorMode(ebiten.CursorModeVisible)
+
+	// for color menu items [1, 1, 1] represents NRGBA{255, 255, 255}
+	g.menu.newMinLightRGB = [3]float32{
+		float32(g.minLightRGB.R) * 1 / 255, float32(g.minLightRGB.G) * 1 / 255, float32(g.minLightRGB.B) * 1 / 255,
+	}
+	g.menu.newMaxLightRGB = [3]float32{
+		float32(g.maxLightRGB.R) * 1 / 255, float32(g.maxLightRGB.G) * 1 / 255, float32(g.maxLightRGB.B) * 1 / 255,
+	}
+
+	g.menu.initMenu()
+}
+
 func (g *Game) closeMenu() {
+	ebiten.SetCursorMode(ebiten.CursorModeCaptured)
 	g.paused = false
 	g.menu.active = false
+	g.mouseMode = MouseModeLook
 }
 
 func (m *DemoMenu) layout(w, h int) {

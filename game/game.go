@@ -88,6 +88,7 @@ type Game struct {
 	mapWidth, mapHeight int
 
 	showSpriteBoxes bool
+	wasm            bool
 	debug           bool
 }
 
@@ -141,9 +142,14 @@ func NewGame() *Game {
 	// init the sprites
 	g.loadSprites()
 
-	// init mouse movement mode
-	ebiten.SetCursorMode(ebiten.CursorModeCaptured)
-	g.mouseMode = MouseModeMove
+	if g.wasm {
+		// web browser cannot start with cursor captured
+	} else {
+		ebiten.SetCursorMode(ebiten.CursorModeCaptured)
+	}
+
+	// init mouse look mode
+	g.mouseMode = MouseModeLook
 	g.mouseX, g.mouseY = math.MinInt32, math.MinInt32
 
 	//--init camera and renderer--//
@@ -177,6 +183,9 @@ func (g *Game) initConfig() {
 	viper.SetConfigName("demo-config")
 	viper.SetConfigType("json")
 
+	// special behavior needed for wasm play
+	g.wasm = runtime.GOARCH == "wasm"
+
 	// setup environment variable with DEMO as prefix (e.g. "export DEMO_SCREEN_VSYNC=false")
 	viper.SetEnvPrefix("demo")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
@@ -192,13 +201,20 @@ func (g *Game) initConfig() {
 	// set default config values
 	viper.SetDefault("debug", false)
 	viper.SetDefault("showSpriteBoxes", false)
-	viper.SetDefault("screen.width", 1024)
-	viper.SetDefault("screen.height", 768)
-	viper.SetDefault("screen.renderScale", 1.0)
 	viper.SetDefault("screen.fullscreen", false)
 	viper.SetDefault("screen.vsync", true)
 	viper.SetDefault("screen.renderDistance", -1)
 	viper.SetDefault("screen.renderFloor", true)
+
+	if g.wasm {
+		viper.SetDefault("screen.width", 640)
+		viper.SetDefault("screen.height", 480)
+		viper.SetDefault("screen.renderScale", 0.5)
+	} else {
+		viper.SetDefault("screen.width", 1024)
+		viper.SetDefault("screen.height", 768)
+		viper.SetDefault("screen.renderScale", 1.0)
+	}
 
 	err := viper.ReadInConfig()
 	if err != nil && g.debug {
@@ -244,12 +260,6 @@ func (g *Game) SaveConfig() error {
 
 // Run is the Ebiten Run loop caller
 func (g *Game) Run() {
-	// On browsers, let's use fullscreen so that this is playable on any browsers.
-	// It is planned to ignore the given 'scale' apply fullscreen automatically on browsers (#571).
-	if runtime.GOARCH == "js" || runtime.GOOS == "js" {
-		ebiten.SetFullscreen(true)
-	}
-
 	g.paused = false
 
 	if err := ebiten.RunGame(g); err != nil {
