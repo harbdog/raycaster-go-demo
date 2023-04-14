@@ -119,8 +119,8 @@ func (g *Game) loadSprites() {
 	// preload projectile sprites
 	chargedBoltImg := g.tex.textures[17]
 	chargedBoltWidth := chargedBoltImg.Bounds().Dx()
-	chargedBoltCols, chargedBoltRows := 12, 1
-	chargedBoltScale := 0.75
+	chargedBoltCols, chargedBoltRows := 6, 1
+	chargedBoltScale := 0.3
 	// in pixels, radius to use for collision testing
 	chargedBoltPxRadius := 50.0
 	chargedBoltCollisionRadius := (chargedBoltScale * chargedBoltPxRadius) / (float64(chargedBoltWidth) / float64(chargedBoltCols))
