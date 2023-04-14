@@ -125,8 +125,8 @@ github.com/googleapis/gax-go/v2 v2.0.4/go.mod h1:0Wqv26UfaUD9n4G6kQubkQ+KchISgw+
 github.com/googleapis/gax-go/v2 v2.0.5/go.mod h1:DWXyrwAJ9X0FpwwEdw+IPEYBICEFu5mhpdKc/us6bOk=
 github.com/googleapis/google-cloud-go-testing v0.0.0-20200911160855-bcd43fbb19e8/go.mod h1:dvDLG8qkwmyD9a/MJJN3XJcT3xFxOKAvTZGvuZmac9g=
 github.com/hajimehoshi/bitmapfont/v2 v2.2.3 h1:jmq/TMNj352V062Tr5e3hAoipkoxCbY1JWTzor0zNps=
-github.com/hajimehoshi/ebiten/v2 v2.5.0 h1:jnz5dngMflIbsIZoj19Vs4zF3kDv1hPUFSeu4r0hIpY=
-github.com/hajimehoshi/ebiten/v2 v2.5.0/go.mod h1:mnHSOVysTr/nUZrN1lBTRqhK4NG+T9NR3JsJP2rCppk=
+github.com/hajimehoshi/ebiten/v2 v2.5.2 h1:/NPHsq2EdZ/4yRT6p+I8OHzXgWePl8NYgkg8P3VVdnQ=
+github.com/hajimehoshi/ebiten/v2 v2.5.2/go.mod h1:mnHSOVysTr/nUZrN1lBTRqhK4NG+T9NR3JsJP2rCppk=
 github.com/harbdog/raycaster-go v1.9.0 h1:gr6U5GW+YMEYLW7VdCOFarjurOK3qaITI+WeBEZcWbM=
 github.com/harbdog/raycaster-go v1.9.0/go.mod h1:dQ76+D+A30fRhc8BuUn2xv2ak4IacdhooT/WTvAJO/s=
 github.com/hashicorp/golang-lru v0.5.0/go.mod h1:/m3WP610KZHVQ1SGc6re/UDhFvYD7pJ4Ao+sR/qLZy8=
