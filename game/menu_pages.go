@@ -34,7 +34,7 @@ func gamePage(menu *DemoMenu) *page {
 	)
 	c.AddChild(resume)
 
-	if menu.game.wasm {
+	if menu.game.osType == osTypeBrowser {
 		// exit in browser kills but freezes the application, users can just close the tab/window
 	} else {
 		// show in game exit button

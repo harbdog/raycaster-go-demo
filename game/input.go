@@ -17,22 +17,26 @@ const (
 )
 
 func (g *Game) handleInput() {
-	if g.wasm {
-		// browsers use Escape key to release captured cursor and do not input key press, special handling needed
-		if ebiten.CursorMode() == ebiten.CursorModeVisible && !g.menu.active {
-			g.openMenu()
-		}
 
-		if ebiten.CursorMode() == ebiten.CursorModeCaptured && g.menu.active {
-			g.closeMenu()
-		}
-
-	} else if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+	menuKeyPressed := inpututil.IsKeyJustPressed(ebiten.KeyEscape) || inpututil.IsKeyJustPressed(ebiten.KeyF1)
+	if menuKeyPressed {
 		if g.menu.active {
-			g.closeMenu()
+			if g.osType == osTypeBrowser && inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+				// do not allow Esc key close menu in browser, since Esc key releases browser mouse capture
+			} else {
+				g.closeMenu()
+			}
 		} else {
 			g.openMenu()
 		}
+	}
+
+	if g.osType == osTypeBrowser && ebiten.CursorMode() == ebiten.CursorModeVisible && !g.menu.active {
+		// not working sometimes (https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API#iframe_limitations):
+		//   sm_exec.js:349 pointerlockerror event is fired. 'sandbox="allow-pointer-lock"' might be required at an iframe.
+		//   This function on browsers must be called as a result of a gestural interaction or orientation change.
+		//   localhost/:1 Uncaught (in promise) DOMException: The user has exited the lock before this request was completed.
+		g.openMenu()
 	}
 
 	if g.paused {
@@ -51,7 +55,7 @@ func (g *Game) handleInput() {
 	}
 
 	switch {
-	case ebiten.IsKeyPressed(ebiten.KeyControl) && !g.wasm:
+	case ebiten.IsKeyPressed(ebiten.KeyControl) && g.osType == osTypeDesktop:
 		// debug cursor mode not intended for browser purposes
 		if g.mouseMode != MouseModeCursor {
 			ebiten.SetCursorMode(ebiten.CursorModeVisible)
