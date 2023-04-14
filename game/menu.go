@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image"
 	"log"
+	"math"
 	"os"
 
 	"github.com/ebitenui/ebitenui"
@@ -178,6 +179,7 @@ func (g *Game) openMenu() {
 }
 
 func (g *Game) closeMenu() {
+	g.mouseX, g.mouseY = math.MinInt32, math.MinInt32
 	ebiten.SetCursorMode(ebiten.CursorModeCaptured)
 	g.paused = false
 	g.menu.active = false

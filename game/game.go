@@ -88,9 +88,16 @@ type Game struct {
 	mapWidth, mapHeight int
 
 	showSpriteBoxes bool
-	wasm            bool
+	osType          osType
 	debug           bool
 }
+
+type osType int
+
+const (
+	osTypeDesktop osType = iota
+	osTypeBrowser
+)
 
 // NewGame - Allows the game to perform any initialization it needs to before starting to run.
 // This is where it can query for any required services and load any non-graphic
@@ -142,7 +149,7 @@ func NewGame() *Game {
 	// init the sprites
 	g.loadSprites()
 
-	if g.wasm {
+	if g.osType == osTypeBrowser {
 		// web browser cannot start with cursor captured
 	} else {
 		ebiten.SetCursorMode(ebiten.CursorModeCaptured)
@@ -184,7 +191,12 @@ func (g *Game) initConfig() {
 	viper.SetConfigType("json")
 
 	// special behavior needed for wasm play
-	g.wasm = runtime.GOARCH == "wasm"
+	switch runtime.GOOS {
+	case "js":
+		g.osType = osTypeBrowser
+	default:
+		g.osType = osTypeDesktop
+	}
 
 	// setup environment variable with DEMO as prefix (e.g. "export DEMO_SCREEN_VSYNC=false")
 	viper.SetEnvPrefix("demo")
@@ -206,9 +218,9 @@ func (g *Game) initConfig() {
 	viper.SetDefault("screen.renderDistance", -1)
 	viper.SetDefault("screen.renderFloor", true)
 
-	if g.wasm {
-		viper.SetDefault("screen.width", 640)
-		viper.SetDefault("screen.height", 480)
+	if g.osType == osTypeBrowser {
+		viper.SetDefault("screen.width", 800)
+		viper.SetDefault("screen.height", 600)
 		viper.SetDefault("screen.renderScale", 0.5)
 	} else {
 		viper.SetDefault("screen.width", 1024)
