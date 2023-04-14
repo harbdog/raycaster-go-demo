@@ -6,9 +6,17 @@ To see it in action, see the [demo video on YouTube](https://www.youtube.com/wat
 
 ![Screenshot](docs/images/screenshot.jpg?raw=true)
 
+## How to try
+
+The demo is now available to try in the browser: https://harbdog.github.io/raycaster-go-demo/
+
+- The browser version may run much slower than running locally as an application,
+  and may not run very well on old or slow machines. It also requires a mouse and keyboard,
+  see the controls listed below.
+
 ## How to run
 
-To install and run the demo from source:
+To run the demo from source locally:
 
 1. Download, install, and setup Golang https://golang.org/dl/
 2. Clone/download the demo project locally.
@@ -20,15 +28,15 @@ To install and run the demo from source:
 
 ## Controls
 
-* Press `Escape` key to show demo settings menu (also to exit the game)
-* Hold `CTRL` key to release mouse cursor capture
+* Press `Escape` or `F1` key to show demo settings menu (also to exit the game)
 * Move the mouse to rotate and pitch view
 * Move and strafe using `WASD` or `Arrow Keys`
 * Click left mouse button to fire current weapon
 * Use mouse wheel or press `1` or `2` to select a weapon
 * Press `H` to holster/put away current weapon
 * Hold `Shift` key to move faster
-* Hold `ALT` key to enter mouse move mode (vertical mouse moves position instead of pitch)
 * Hold `C` key for crouch position
 * Hold `Z` key for prone position
 * Hold `Spacebar` for jump position
+* Hold `ALT` key to enter mouse move mode (vertical mouse moves position instead of pitch)
+* Hold `CTRL` key to release mouse cursor capture
