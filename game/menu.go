@@ -2,7 +2,6 @@ package game
 
 import (
 	"fmt"
-	"image"
 	"log"
 	"math"
 	"os"
@@ -15,7 +14,7 @@ import (
 type DemoMenu struct {
 	active bool
 	ui     *ebitenui.UI
-	window *widget.Window
+	root   *widget.Container
 	res    *uiResources
 	game   *Game
 
@@ -69,7 +68,7 @@ func createMenu(g *Game) *DemoMenu {
 }
 
 func (m *DemoMenu) initMenu() {
-	root := widget.NewContainer(
+	m.root = widget.NewContainer(
 		widget.ContainerOpts.Layout(widget.NewGridLayout(
 			// It is using a GridLayout with a single column
 			widget.GridLayoutOpts.Columns(1),
@@ -90,40 +89,17 @@ func (m *DemoMenu) initMenu() {
 
 	// window title
 	titleBar := titleBarContainer(m)
+	m.root.AddChild(titleBar)
 
 	// settings pages
 	settings := settingsContainer(m)
-	root.AddChild(settings)
+	m.root.AddChild(settings)
 
 	// footer
 	footer := footerContainer(m)
-	root.AddChild(footer)
+	m.root.AddChild(footer)
 
-	ww, wh := m.game.screenWidth, m.game.screenHeight
-	window := widget.NewWindow(
-		widget.WindowOpts.Modal(),
-		widget.WindowOpts.Contents(root),
-		widget.WindowOpts.TitleBar(titleBar, 30),
-		widget.WindowOpts.MinSize(ww/2, wh/2),
-		widget.WindowOpts.MaxSize(ww, wh),
-		widget.WindowOpts.Resizeable(),
-		widget.WindowOpts.ResizeHandler(func(args *widget.WindowChangedEventArgs) {
-			fmt.Println("Resize: ", args.Rect)
-		}),
-		widget.WindowOpts.Draggable(),
-		widget.WindowOpts.MoveHandler(func(args *widget.WindowChangedEventArgs) {
-			fmt.Println("Move: ", args.Rect)
-		}),
-	)
-
-	r := image.Rect(0, 0, 2*ww/3, 2*wh/3)
-	r = r.Add(image.Point{ww / 8, wh / 16})
-	window.SetLocation(r)
-	if m.window != nil {
-		m.window.Close()
-	}
-	m.ui.AddWindow(window)
-	m.window = window
+	m.ui.Container = m.root
 }
 
 func (g *Game) generateMenuResolutions() []MenuResolution {

@@ -90,7 +90,7 @@ func settingsContainer(menu *DemoMenu) widget.PreferredSizeLocateableWidget {
 
 		widget.ListOpts.EntrySelectedHandler(func(args *widget.ListEntrySelectedEventArgs) {
 			pageContainer.setPage(args.Entry.(*page))
-			menu.window.RequestRelayout()
+			menu.root.RequestRelayout()
 		}))
 	c.AddChild(pageList)
 
