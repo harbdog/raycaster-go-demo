@@ -168,7 +168,7 @@ func NewGame() *Game {
 
 	// initialize camera to player position
 	g.updatePlayerCamera(true)
-	g.fovDegrees = g.camera.FovAngle() // TODO: store and load from config file
+	g.setFovAngle(g.fovDegrees)
 	g.fovDepth = g.camera.FovDepth()
 
 	g.zoomFovDepth = 2.0
@@ -217,6 +217,7 @@ func (g *Game) initConfig() {
 	viper.SetDefault("screen.vsync", true)
 	viper.SetDefault("screen.renderDistance", -1)
 	viper.SetDefault("screen.renderFloor", true)
+	viper.SetDefault("screen.fovDegrees", 68)
 
 	if g.osType == osTypeBrowser {
 		viper.SetDefault("screen.width", 800)
@@ -236,6 +237,7 @@ func (g *Game) initConfig() {
 	// get config values
 	g.screenWidth = viper.GetInt("screen.width")
 	g.screenHeight = viper.GetInt("screen.height")
+	g.fovDegrees = viper.GetFloat64("screen.fovDegrees")
 	g.renderScale = viper.GetFloat64("screen.renderScale")
 	g.fullscreen = viper.GetBool("screen.fullscreen")
 	g.vsync = viper.GetBool("screen.vsync")
