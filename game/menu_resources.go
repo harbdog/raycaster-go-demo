@@ -268,6 +268,7 @@ func NewUIResources() (*uiResources, error) {
 }
 
 func loadFonts() (*fonts, error) {
+	// TODO: adjust font size based on screen size
 	fontFace, err := loadFont(fontFaceRegular, 20)
 	if err != nil {
 		return nil, err

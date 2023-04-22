@@ -18,6 +18,11 @@ type DemoMenu struct {
 	res    *uiResources
 	game   *Game
 
+	marginX int
+	marginY int
+	padding int
+	spacing int
+
 	resolutions []MenuResolution
 
 	// held vars that should not get updated in real-time
@@ -68,6 +73,12 @@ func createMenu(g *Game) *DemoMenu {
 }
 
 func (m *DemoMenu) initMenu() {
+	// adjust menu size based on window size
+	m.marginX = int(float64(m.game.screenHeight) * 0.015)
+	m.marginY = int(float64(m.game.screenHeight) * 0.025)
+	m.spacing = int(float64(m.game.screenHeight) * 0.015)
+	m.padding = 4
+
 	m.root = widget.NewContainer(
 		widget.ContainerOpts.Layout(widget.NewGridLayout(
 			// It is using a GridLayout with a single column
@@ -79,11 +90,13 @@ func (m *DemoMenu) initMenu() {
 			widget.GridLayoutOpts.Stretch([]bool{true}, []bool{false, true, false}),
 			// Padding defines how much space to put around the outside of the grid.
 			widget.GridLayoutOpts.Padding(widget.Insets{
-				Top:    20,
-				Bottom: 20,
+				Top:    m.marginY,
+				Bottom: m.marginY,
+				Left:   m.marginX,
+				Right:  m.marginX,
 			}),
 			// Spacing defines how much space to put between each column and row
-			widget.GridLayoutOpts.Spacing(0, 20))),
+			widget.GridLayoutOpts.Spacing(0, m.spacing))),
 		widget.ContainerOpts.BackgroundImage(m.res.background),
 	)
 
@@ -160,11 +173,6 @@ func (g *Game) closeMenu() {
 	g.paused = false
 	g.menu.active = false
 	g.mouseMode = MouseModeLook
-}
-
-func (m *DemoMenu) layout(w, h int) {
-	// TODO: react to game window layout size/scale changes
-	//m.mgr.SetDisplaySize(float32(w), float32(h))
 }
 
 func (m *DemoMenu) update() {
