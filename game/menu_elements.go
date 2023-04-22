@@ -5,16 +5,16 @@ import (
 	"github.com/ebitenui/ebitenui/widget"
 )
 
-func titleBarContainer(menu *DemoMenu) *widget.Container {
-	res := menu.res
+func titleBarContainer(m *DemoMenu) *widget.Container {
+	res := m.res
 
 	c := widget.NewContainer(
 		widget.ContainerOpts.BackgroundImage(res.panel.titleBar),
-		widget.ContainerOpts.Layout(widget.NewGridLayout(widget.GridLayoutOpts.Columns(3), widget.GridLayoutOpts.Stretch([]bool{true, false, false}, []bool{true}), widget.GridLayoutOpts.Padding(widget.Insets{
-			Left:   30,
-			Right:  5,
-			Top:    6,
-			Bottom: 5,
+		widget.ContainerOpts.Layout(widget.NewGridLayout(widget.GridLayoutOpts.Columns(2), widget.GridLayoutOpts.Stretch([]bool{true, false}, []bool{true}), widget.GridLayoutOpts.Padding(widget.Insets{
+			Left:   m.padding,
+			Right:  m.padding,
+			Top:    m.padding,
+			Bottom: m.padding,
 		}))))
 
 	c.AddChild(widget.NewText(
@@ -27,7 +27,7 @@ func titleBarContainer(menu *DemoMenu) *widget.Container {
 		widget.ButtonOpts.TextPadding(res.button.padding),
 		widget.ButtonOpts.Text("X", res.button.face, res.button.text),
 		widget.ButtonOpts.ClickedHandler(func(args *widget.ButtonClickedEventArgs) {
-			menu.game.closeMenu()
+			m.game.closeMenu()
 		}),
 		widget.ButtonOpts.TabOrder(99),
 	))
@@ -35,13 +35,13 @@ func titleBarContainer(menu *DemoMenu) *widget.Container {
 	return c
 }
 
-func footerContainer(menu *DemoMenu) *widget.Container {
-	res := menu.res
+func footerContainer(m *DemoMenu) *widget.Container {
+	res := m.res
 
 	c := widget.NewContainer(widget.ContainerOpts.Layout(widget.NewRowLayout(
 		widget.RowLayoutOpts.Padding(widget.Insets{
-			Left:  25,
-			Right: 25,
+			Left:  m.spacing,
+			Right: m.spacing,
 		}),
 	)))
 	c.AddChild(widget.NewText(
@@ -49,25 +49,25 @@ func footerContainer(menu *DemoMenu) *widget.Container {
 	return c
 }
 
-func settingsContainer(menu *DemoMenu) widget.PreferredSizeLocateableWidget {
-	res := menu.res
+func settingsContainer(m *DemoMenu) widget.PreferredSizeLocateableWidget {
+	res := m.res
 
 	c := widget.NewContainer(
 		widget.ContainerOpts.Layout(widget.NewGridLayout(
 			widget.GridLayoutOpts.Padding(widget.Insets{
-				Left:  25,
-				Right: 25,
+				Left:  m.spacing,
+				Right: m.spacing,
 			}),
 			widget.GridLayoutOpts.Columns(2),
 			widget.GridLayoutOpts.Stretch([]bool{false, true}, []bool{true}),
-			widget.GridLayoutOpts.Spacing(20, 0),
+			widget.GridLayoutOpts.Spacing(m.spacing, 0),
 		)))
 
 	pages := []interface{}{
-		gamePage(menu),
-		displayPage(menu),
-		renderPage(menu),
-		lightingPage(menu),
+		gamePage(m),
+		displayPage(m),
+		renderPage(m),
+		lightingPage(m),
 	}
 
 	pageContainer := newPageContainer(res)
@@ -90,7 +90,7 @@ func settingsContainer(menu *DemoMenu) widget.PreferredSizeLocateableWidget {
 
 		widget.ListOpts.EntrySelectedHandler(func(args *widget.ListEntrySelectedEventArgs) {
 			pageContainer.setPage(args.Entry.(*page))
-			menu.root.RequestRelayout()
+			m.root.RequestRelayout()
 		}))
 	c.AddChild(pageList)
 
@@ -157,13 +157,13 @@ func newListComboButton(entries []interface{}, selectedEntry interface{}, button
 	return c
 }
 
-func newSeparator(res *uiResources, ld interface{}) widget.PreferredSizeLocateableWidget {
+func (m *DemoMenu) newSeparator(res *uiResources, ld interface{}) widget.PreferredSizeLocateableWidget {
 	c := widget.NewContainer(
 		widget.ContainerOpts.Layout(widget.NewRowLayout(
 			widget.RowLayoutOpts.Direction(widget.DirectionVertical),
 			widget.RowLayoutOpts.Padding(widget.Insets{
-				Top:    20,
-				Bottom: 20,
+				Top:    m.spacing,
+				Bottom: m.spacing,
 			}))),
 		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(ld)))
 
