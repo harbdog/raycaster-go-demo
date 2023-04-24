@@ -93,6 +93,7 @@ func displayPage(m *DemoMenu) *page {
 		resolutions = append([]interface{}{r}, resolutions...)
 	}
 
+	// TODO: figure out how to make Resolution dropdown snap to currently selected entry instead of first
 	var fovSlider *widget.Slider
 	resolutionCombo := newListComboButton(
 		resolutions,
@@ -108,8 +109,13 @@ func displayPage(m *DemoMenu) *page {
 			if m.game.screenWidth != r.width || m.game.screenHeight != r.height {
 				m.game.setResolution(r.width, r.height)
 
-				// also pre-select ideal FOV for the aspect ratio
-				fovSlider.Current = r.aspectRatio.fov
+				// pre-select ideal FOV for the aspect ratio
+				m.game.setFovAngle(float64(r.aspectRatio.fov))
+
+				// re-initialize the menu with the Display settings pre-selected
+				m.preSelectedPage = 1
+				m.initResources()
+				m.initMenu()
 			}
 		},
 		res)
@@ -129,9 +135,12 @@ func displayPage(m *DemoMenu) *page {
 	var fovValueText *widget.Label
 
 	fovSlider = widget.NewSlider(
-		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
-			Position: widget.RowLayoutPositionCenter,
-		}), widget.WidgetOpts.MinSize(200, 6)),
+		widget.SliderOpts.WidgetOpts(
+			widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+				Position: widget.RowLayoutPositionCenter,
+			}),
+			widget.WidgetOpts.MinSize(200, 6),
+		),
 		widget.SliderOpts.MinMax(60, 120),
 		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
 		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),

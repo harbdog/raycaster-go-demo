@@ -9,6 +9,7 @@ import (
 	"github.com/ebitenui/ebitenui"
 	"github.com/ebitenui/ebitenui/widget"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/harbdog/raycaster-go/geom"
 )
 
 type DemoMenu struct {
@@ -18,12 +19,14 @@ type DemoMenu struct {
 	res    *uiResources
 	game   *Game
 
-	marginX int
-	marginY int
-	padding int
-	spacing int
+	fontScale float64
+	marginX   int
+	marginY   int
+	padding   int
+	spacing   int
 
-	resolutions []MenuResolution
+	resolutions     []MenuResolution
+	preSelectedPage int
 
 	// held vars that should not get updated in real-time
 	newMinLightRGB [3]float32
@@ -47,38 +50,71 @@ func (r MenuResolution) String() string {
 }
 
 func createMenu(g *Game) *DemoMenu {
-	res, err := NewUIResources()
-	if err != nil {
-		log.Fatal(err)
-		os.Exit(1)
-	}
-
-	// using empty background container since settings will be in a window
-	bg := widget.NewContainer()
-	var ui *ebitenui.UI = &ebitenui.UI{
-		Container: bg,
-	}
+	var ui *ebitenui.UI = &ebitenui.UI{}
 
 	menu := &DemoMenu{
 		game:        g,
 		ui:          ui,
-		res:         res,
 		active:      false,
+		fontScale:   1.0,
 		resolutions: g.generateMenuResolutions(),
 	}
 
+	menu.initResources()
 	menu.initMenu()
 
 	return menu
 }
 
-func (m *DemoMenu) initMenu() {
-	// adjust menu size based on window size
-	m.marginX = int(float64(m.game.screenHeight) * 0.015)
-	m.marginY = int(float64(m.game.screenHeight) * 0.025)
-	m.spacing = int(float64(m.game.screenHeight) * 0.015)
+func (m *DemoMenu) initResources() {
+	// adjust menu and resource sizes based on window size
+	minMenuAspectRatio, maxMenuAspectRatio := 1.0, 1.5
+	screenW, screenH := float64(m.game.screenWidth), float64(m.game.screenHeight)
+	screenAspectRatio := screenW / screenH
+
+	var paddingX, paddingY, menuWidth, menuHeight int
+
+	if screenAspectRatio > maxMenuAspectRatio {
+		// ultra-wide aspect, constrict HUD width based on screen height
+		paddingY = int(screenH * 0.02)
+		menuHeight = int(screenH) - paddingY*2
+
+		menuWidth = int(screenH * maxMenuAspectRatio)
+		//paddingX = menuWidth * 0.02
+	} else if screenAspectRatio < minMenuAspectRatio {
+		// tall vertical aspect, constrict HUD height based on screen width
+		paddingX = int(screenW * 0.02)
+		menuWidth = int(screenW) - paddingX*2
+
+		menuHeight = int(screenW / minMenuAspectRatio)
+		//paddingY = menuHeight * 0.02
+	} else {
+		// use current aspect ratio
+		paddingX, paddingY = int(screenW*0.02), int(screenH*0.02)
+		menuWidth, menuHeight = int(screenW)-paddingX*2, int(screenH)-paddingY*2
+	}
+
+	menuSize := menuHeight
+	if menuWidth < menuHeight {
+		menuSize = menuWidth
+	}
+
+	m.fontScale = geom.Clamp(float64(menuSize)*0.002, 0.6, 2.4)
+
+	m.marginX = (m.game.screenWidth - menuWidth) / 2
+	m.marginY = (m.game.screenHeight - menuHeight) / 2
+	m.spacing = int(float64(menuSize) * 0.02)
 	m.padding = 4
 
+	res, err := NewUIResources(m)
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+	m.res = res
+}
+
+func (m *DemoMenu) initMenu() {
 	m.root = widget.NewContainer(
 		widget.ContainerOpts.Layout(widget.NewGridLayout(
 			// It is using a GridLayout with a single column
