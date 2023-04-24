@@ -171,10 +171,10 @@ type fonts struct {
 	toolTipFace  font.Face
 }
 
-func NewUIResources() (*uiResources, error) {
+func NewUIResources(m *DemoMenu) (*uiResources, error) {
 	background := image.NewNineSliceColor(hexToColorAlpha(backgroundColor, 155))
 
-	fonts, err := loadFonts()
+	fonts, err := loadFonts(m.fontScale)
 	if err != nil {
 		return nil, err
 	}
@@ -267,24 +267,23 @@ func NewUIResources() (*uiResources, error) {
 	}, nil
 }
 
-func loadFonts() (*fonts, error) {
-	// TODO: adjust font size based on screen size
-	fontFace, err := loadFont(fontFaceRegular, 20)
+func loadFonts(fontScale float64) (*fonts, error) {
+	fontFace, err := loadFont(fontFaceRegular, 20.0*fontScale)
 	if err != nil {
 		return nil, err
 	}
 
-	titleFontFace, err := loadFont(fontFaceBold, 24)
+	titleFontFace, err := loadFont(fontFaceBold, 24.0*fontScale)
 	if err != nil {
 		return nil, err
 	}
 
-	bigTitleFontFace, err := loadFont(fontFaceBold, 28)
+	bigTitleFontFace, err := loadFont(fontFaceBold, 28.0*fontScale)
 	if err != nil {
 		return nil, err
 	}
 
-	toolTipFace, err := loadFont(fontFaceRegular, 15)
+	toolTipFace, err := loadFont(fontFaceRegular, 15.0*fontScale)
 	if err != nil {
 		return nil, err
 	}
@@ -348,25 +347,25 @@ func loadImageNineSlice(path string, centerWidth int, centerHeight int) (*image.
 }
 
 func newButtonResources(fonts *fonts) (*buttonResources, error) {
-	idle, err := loadImageNineSlice("resources/menu/ui/button-idle.png", 12, 0)
+	idle, err := loadImageNineSlice("resources/menu/ui/button-idle.png", 12, 1)
 	if err != nil {
 		return nil, err
 	}
 
-	hover, err := loadImageNineSlice("resources/menu/ui/button-hover.png", 12, 0)
+	hover, err := loadImageNineSlice("resources/menu/ui/button-hover.png", 12, 1)
 	if err != nil {
 		return nil, err
 	}
-	pressed_hover, err := loadImageNineSlice("resources/menu/ui/button-selected-hover.png", 12, 0)
+	pressed_hover, err := loadImageNineSlice("resources/menu/ui/button-selected-hover.png", 12, 1)
 	if err != nil {
 		return nil, err
 	}
-	pressed, err := loadImageNineSlice("resources/menu/ui/button-pressed.png", 12, 0)
+	pressed, err := loadImageNineSlice("resources/menu/ui/button-pressed.png", 12, 1)
 	if err != nil {
 		return nil, err
 	}
 
-	disabled, err := loadImageNineSlice("resources/menu/ui/button-disabled.png", 12, 0)
+	disabled, err := loadImageNineSlice("resources/menu/ui/button-disabled.png", 12, 1)
 	if err != nil {
 		return nil, err
 	}
@@ -397,17 +396,17 @@ func newButtonResources(fonts *fonts) (*buttonResources, error) {
 }
 
 func newCheckboxResources() (*checkboxResources, error) {
-	idle, err := loadImageNineSlice("resources/menu/ui/checkbox-idle.png", 20, 0)
+	idle, err := loadImageNineSlice("resources/menu/ui/checkbox-idle.png", 20, 1)
 	if err != nil {
 		return nil, err
 	}
 
-	hover, err := loadImageNineSlice("resources/menu/ui/checkbox-hover.png", 20, 0)
+	hover, err := loadImageNineSlice("resources/menu/ui/checkbox-hover.png", 20, 1)
 	if err != nil {
 		return nil, err
 	}
 
-	disabled, err := loadImageNineSlice("resources/menu/ui/checkbox-disabled.png", 20, 0)
+	disabled, err := loadImageNineSlice("resources/menu/ui/checkbox-disabled.png", 20, 1)
 	if err != nil {
 		return nil, err
 	}
@@ -457,22 +456,22 @@ func newLabelResources(fonts *fonts) *labelResources {
 }
 
 func newComboButtonResources(fonts *fonts) (*comboButtonResources, error) {
-	idle, err := loadImageNineSlice("resources/menu/ui/combo-button-idle.png", 12, 0)
+	idle, err := loadImageNineSlice("resources/menu/ui/combo-button-idle.png", 12, 1)
 	if err != nil {
 		return nil, err
 	}
 
-	hover, err := loadImageNineSlice("resources/menu/ui/combo-button-hover.png", 12, 0)
+	hover, err := loadImageNineSlice("resources/menu/ui/combo-button-hover.png", 12, 1)
 	if err != nil {
 		return nil, err
 	}
 
-	pressed, err := loadImageNineSlice("resources/menu/ui/combo-button-pressed.png", 12, 0)
+	pressed, err := loadImageNineSlice("resources/menu/ui/combo-button-pressed.png", 12, 1)
 	if err != nil {
 		return nil, err
 	}
 
-	disabled, err := loadImageNineSlice("resources/menu/ui/combo-button-disabled.png", 12, 0)
+	disabled, err := loadImageNineSlice("resources/menu/ui/combo-button-disabled.png", 12, 1)
 	if err != nil {
 		return nil, err
 	}

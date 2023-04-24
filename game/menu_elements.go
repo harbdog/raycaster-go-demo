@@ -96,7 +96,11 @@ func settingsContainer(m *DemoMenu) widget.PreferredSizeLocateableWidget {
 
 	c.AddChild(pageContainer.widget)
 
-	pageList.SetSelectedEntry(pages[0])
+	pageList.SetSelectedEntry(pages[m.preSelectedPage])
+	if m.preSelectedPage != 0 {
+		// reset pre-selected page selection
+		m.preSelectedPage = 0
+	}
 
 	return c
 }
