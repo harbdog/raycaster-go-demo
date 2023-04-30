@@ -96,7 +96,7 @@ func (m *DemoMenu) initResources() {
 		menuSize = menuWidth
 	}
 
-	m.fontScale = geom.Clamp(float64(menuSize)*0.002, 0.6, 2.0)
+	m.fontScale = geom.Clamp(float64(menuSize)*0.002, 0.5, 2.0)
 
 	m.marginX = (m.game.screenWidth - menuWidth) / 2
 	m.marginY = (m.game.screenHeight - menuHeight) / 2
