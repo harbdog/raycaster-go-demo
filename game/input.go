@@ -31,14 +31,6 @@ func (g *Game) handleInput() {
 		}
 	}
 
-	if g.osType == osTypeBrowser && ebiten.CursorMode() == ebiten.CursorModeVisible && !g.menu.active {
-		// not working sometimes (https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API#iframe_limitations):
-		//   sm_exec.js:349 pointerlockerror event is fired. 'sandbox="allow-pointer-lock"' might be required at an iframe.
-		//   This function on browsers must be called as a result of a gestural interaction or orientation change.
-		//   localhost/:1 Uncaught (in promise) DOMException: The user has exited the lock before this request was completed.
-		g.openMenu()
-	}
-
 	if g.paused {
 		// currently only paused when menu is active, one could consider other pauses not the subject of this demo
 		return
