@@ -67,6 +67,27 @@ func newImageFromFile(path string) (*ebiten.Image, image.Image, error) {
 	return eb, im, err
 }
 
+func newScaledImageFromFile(path string, scale float64) (*ebiten.Image, image.Image, error) {
+	eb, im, err := newImageFromFile(path)
+	if err != nil {
+		return eb, im, err
+	}
+
+	if scale == 1.0 {
+		return eb, im, err
+	}
+
+	op := &ebiten.DrawImageOptions{}
+	op.Filter = ebiten.FilterNearest
+	op.GeoM.Scale(scale, scale)
+
+	scaledWidth, scaledHeight := float64(eb.Bounds().Dx())*scale, float64(eb.Bounds().Dy())*scale
+	scaledImage := ebiten.NewImage(int(scaledWidth), int(scaledHeight))
+	scaledImage.DrawImage(eb, op)
+
+	return scaledImage, scaledImage, err
+}
+
 func getRGBAFromFile(texFile string) *image.RGBA {
 	var rgba *image.RGBA
 	_, tex, err := newImageFromFile("resources/textures/" + texFile)

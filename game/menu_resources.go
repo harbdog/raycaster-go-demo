@@ -30,11 +30,6 @@ const (
 
 	headerColor = textIdleColor
 
-	textInputCaretColor         = "e7c34b"
-	textInputDisabledCaretColor = "766326"
-
-	toolTipColor = backgroundColor
-
 	separatorColor = listDisabledSelectedBackground
 )
 
@@ -55,13 +50,9 @@ type uiResources struct {
 	comboButton *comboButtonResources
 	list        *listResources
 	slider      *sliderResources
-	progressBar *progressBarResources
 	panel       *panelResources
 	tabBook     *tabBookResources
 	header      *headerResources
-	textInput   *textInputResources
-	textArea    *textAreaResources
-	toolTip     *toolTipResources
 }
 
 type textResources struct {
@@ -116,11 +107,6 @@ type sliderResources struct {
 	handleSize int
 }
 
-type progressBarResources struct {
-	trackImage *widget.ProgressBarImage
-	fillImage  *widget.ProgressBarImage
-}
-
 type panelResources struct {
 	image    *image.NineSlice
 	titleBar *image.NineSlice
@@ -140,31 +126,8 @@ type headerResources struct {
 	color      color.Color
 }
 
-type textInputResources struct {
-	image   *widget.TextInputImage
-	padding widget.Insets
-	face    font.Face
-	color   *widget.TextInputColor
-}
-
-type textAreaResources struct {
-	image        *widget.ScrollContainerImage
-	track        *widget.SliderTrackImage
-	trackPadding widget.Insets
-	handle       *widget.ButtonImage
-	handleSize   int
-	face         font.Face
-	entryPadding widget.Insets
-}
-
-type toolTipResources struct {
-	background *image.NineSlice
-	padding    widget.Insets
-	face       font.Face
-	color      color.Color
-}
-
 type fonts struct {
+	scale        float64
 	face         font.Face
 	titleFace    font.Face
 	bigTitleFace font.Face
@@ -184,7 +147,7 @@ func NewUIResources(m *DemoMenu) (*uiResources, error) {
 		return nil, err
 	}
 
-	checkbox, err := newCheckboxResources()
+	checkbox, err := newCheckboxResources(fonts)
 	if err != nil {
 		return nil, err
 	}
@@ -204,11 +167,6 @@ func NewUIResources(m *DemoMenu) (*uiResources, error) {
 		return nil, err
 	}
 
-	progressBar, err := newProgressBarResources()
-	if err != nil {
-		return nil, err
-	}
-
 	panel, err := newPanelResources()
 	if err != nil {
 		return nil, err
@@ -220,19 +178,6 @@ func NewUIResources(m *DemoMenu) (*uiResources, error) {
 	}
 
 	header, err := newHeaderResources(fonts)
-	if err != nil {
-		return nil, err
-	}
-
-	textInput, err := newTextInputResources(fonts)
-	if err != nil {
-		return nil, err
-	}
-	textArea, err := newTextAreaResources(fonts)
-	if err != nil {
-		return nil, err
-	}
-	toolTip, err := newToolTipResources(fonts)
 	if err != nil {
 		return nil, err
 	}
@@ -260,10 +205,6 @@ func NewUIResources(m *DemoMenu) (*uiResources, error) {
 		panel:       panel,
 		tabBook:     tabBook,
 		header:      header,
-		textInput:   textInput,
-		toolTip:     toolTip,
-		textArea:    textArea,
-		progressBar: progressBar,
 	}, nil
 }
 
@@ -289,6 +230,7 @@ func loadFonts(fontScale float64) (*fonts, error) {
 	}
 
 	return &fonts{
+		scale:        fontScale,
 		face:         fontFace,
 		titleFace:    titleFontFace,
 		bigTitleFace: bigTitleFontFace,
@@ -314,15 +256,15 @@ func loadFont(path string, size float64) (font.Face, error) {
 	}), nil
 }
 
-func loadGraphicImages(idle string, disabled string) (*widget.ButtonImageImage, error) {
-	idleImage, _, err := newImageFromFile(idle)
+func loadGraphicImages(idle string, disabled string, scale float64) (*widget.ButtonImageImage, error) {
+	idleImage, _, err := newScaledImageFromFile(idle, scale)
 	if err != nil {
 		return nil, err
 	}
 
 	var disabledImage *ebiten.Image
 	if disabled != "" {
-		disabledImage, _, err = newImageFromFile(disabled)
+		disabledImage, _, err = newScaledImageFromFile(disabled, scale)
 		if err != nil {
 			return nil, err
 		}
@@ -334,8 +276,8 @@ func loadGraphicImages(idle string, disabled string) (*widget.ButtonImageImage, 
 	}, nil
 }
 
-func loadImageNineSlice(path string, centerWidth int, centerHeight int) (*image.NineSlice, error) {
-	i, _, err := newImageFromFile(path)
+func loadImageNineSlice(path string, centerWidth int, centerHeight int, scale float64) (*image.NineSlice, error) {
+	i, _, err := newScaledImageFromFile(path, scale)
 	if err != nil {
 		return nil, err
 	}
@@ -346,26 +288,44 @@ func loadImageNineSlice(path string, centerWidth int, centerHeight int) (*image.
 		nil
 }
 
+func centerHeightFromFontScale(fontScale float64) int {
+	if fontScale > 1.0 {
+		// value must be 1 when font scale goes over 1.0
+		return 1
+	}
+	return 0
+}
+
+func resourceScaleFromFontScale(fontScale float64) float64 {
+	if fontScale > 1.0 {
+		// resource scale must be no higher than 1 when font scale goes over 1.0
+		return 1.0
+	}
+	return fontScale
+}
+
 func newButtonResources(fonts *fonts) (*buttonResources, error) {
-	idle, err := loadImageNineSlice("resources/menu/ui/button-idle.png", 12, 1)
+	cH := centerHeightFromFontScale(fonts.scale)
+	rS := resourceScaleFromFontScale(fonts.scale)
+	idle, err := loadImageNineSlice("resources/menu/ui/button-idle.png", 12, cH, rS)
 	if err != nil {
 		return nil, err
 	}
 
-	hover, err := loadImageNineSlice("resources/menu/ui/button-hover.png", 12, 1)
+	hover, err := loadImageNineSlice("resources/menu/ui/button-hover.png", 12, cH, rS)
 	if err != nil {
 		return nil, err
 	}
-	pressed_hover, err := loadImageNineSlice("resources/menu/ui/button-selected-hover.png", 12, 1)
+	pressed_hover, err := loadImageNineSlice("resources/menu/ui/button-selected-hover.png", 12, cH, rS)
 	if err != nil {
 		return nil, err
 	}
-	pressed, err := loadImageNineSlice("resources/menu/ui/button-pressed.png", 12, 1)
+	pressed, err := loadImageNineSlice("resources/menu/ui/button-pressed.png", 12, cH, rS)
 	if err != nil {
 		return nil, err
 	}
 
-	disabled, err := loadImageNineSlice("resources/menu/ui/button-disabled.png", 12, 1)
+	disabled, err := loadImageNineSlice("resources/menu/ui/button-disabled.png", 12, cH, rS)
 	if err != nil {
 		return nil, err
 	}
@@ -395,33 +355,35 @@ func newButtonResources(fonts *fonts) (*buttonResources, error) {
 	}, nil
 }
 
-func newCheckboxResources() (*checkboxResources, error) {
-	idle, err := loadImageNineSlice("resources/menu/ui/checkbox-idle.png", 20, 1)
+func newCheckboxResources(fonts *fonts) (*checkboxResources, error) {
+	cH := centerHeightFromFontScale(fonts.scale)
+	rS := resourceScaleFromFontScale(fonts.scale)
+	idle, err := loadImageNineSlice("resources/menu/ui/checkbox-idle.png", 20, cH, rS)
 	if err != nil {
 		return nil, err
 	}
 
-	hover, err := loadImageNineSlice("resources/menu/ui/checkbox-hover.png", 20, 1)
+	hover, err := loadImageNineSlice("resources/menu/ui/checkbox-hover.png", 20, cH, rS)
 	if err != nil {
 		return nil, err
 	}
 
-	disabled, err := loadImageNineSlice("resources/menu/ui/checkbox-disabled.png", 20, 1)
+	disabled, err := loadImageNineSlice("resources/menu/ui/checkbox-disabled.png", 20, cH, rS)
 	if err != nil {
 		return nil, err
 	}
 
-	checked, err := loadGraphicImages("resources/menu/ui/checkbox-checked-idle.png", "resources/menu/ui/checkbox-checked-disabled.png")
+	checked, err := loadGraphicImages("resources/menu/ui/checkbox-checked-idle.png", "resources/menu/ui/checkbox-checked-disabled.png", rS)
 	if err != nil {
 		return nil, err
 	}
 
-	unchecked, err := loadGraphicImages("resources/menu/ui/checkbox-unchecked-idle.png", "resources/menu/ui/checkbox-unchecked-disabled.png")
+	unchecked, err := loadGraphicImages("resources/menu/ui/checkbox-unchecked-idle.png", "resources/menu/ui/checkbox-unchecked-disabled.png", rS)
 	if err != nil {
 		return nil, err
 	}
 
-	greyed, err := loadGraphicImages("resources/menu/ui/checkbox-greyed-idle.png", "resources/menu/ui/checkbox-greyed-disabled.png")
+	greyed, err := loadGraphicImages("resources/menu/ui/checkbox-greyed-idle.png", "resources/menu/ui/checkbox-greyed-disabled.png", rS)
 	if err != nil {
 		return nil, err
 	}
@@ -440,7 +402,7 @@ func newCheckboxResources() (*checkboxResources, error) {
 			Greyed:    greyed,
 		},
 
-		spacing: 10,
+		spacing: 5,
 	}, nil
 }
 
@@ -456,22 +418,24 @@ func newLabelResources(fonts *fonts) *labelResources {
 }
 
 func newComboButtonResources(fonts *fonts) (*comboButtonResources, error) {
-	idle, err := loadImageNineSlice("resources/menu/ui/combo-button-idle.png", 12, 1)
+	cH := centerHeightFromFontScale(fonts.scale)
+	rS := resourceScaleFromFontScale(fonts.scale)
+	idle, err := loadImageNineSlice("resources/menu/ui/combo-button-idle.png", 12, cH, rS)
 	if err != nil {
 		return nil, err
 	}
 
-	hover, err := loadImageNineSlice("resources/menu/ui/combo-button-hover.png", 12, 1)
+	hover, err := loadImageNineSlice("resources/menu/ui/combo-button-hover.png", 12, cH, rS)
 	if err != nil {
 		return nil, err
 	}
 
-	pressed, err := loadImageNineSlice("resources/menu/ui/combo-button-pressed.png", 12, 1)
+	pressed, err := loadImageNineSlice("resources/menu/ui/combo-button-pressed.png", 12, cH, rS)
 	if err != nil {
 		return nil, err
 	}
 
-	disabled, err := loadImageNineSlice("resources/menu/ui/combo-button-disabled.png", 12, 1)
+	disabled, err := loadImageNineSlice("resources/menu/ui/combo-button-disabled.png", 12, cH, rS)
 	if err != nil {
 		return nil, err
 	}
@@ -483,7 +447,7 @@ func newComboButtonResources(fonts *fonts) (*comboButtonResources, error) {
 		Disabled: disabled,
 	}
 
-	arrowDown, err := loadGraphicImages("resources/menu/ui/arrow-down-idle.png", "resources/menu/ui/arrow-down-disabled.png")
+	arrowDown, err := loadGraphicImages("resources/menu/ui/arrow-down-idle.png", "resources/menu/ui/arrow-down-disabled.png", rS)
 	if err != nil {
 		return nil, err
 	}
@@ -637,40 +601,12 @@ func newSliderResources() (*sliderResources, error) {
 	}, nil
 }
 
-func newProgressBarResources() (*progressBarResources, error) {
-	idle, _, err := newImageFromFile("resources/menu/ui/progressbar-track-idle.png")
-	if err != nil {
-		return nil, err
-	}
-	fill_idle, _, err := newImageFromFile("resources/menu/ui/progressbar-fill-idle.png")
-	if err != nil {
-		return nil, err
-	}
-	disabled, _, err := newImageFromFile("resources/menu/ui/slider-track-disabled.png")
-	if err != nil {
-		return nil, err
-	}
-
-	return &progressBarResources{
-		trackImage: &widget.ProgressBarImage{
-			Idle:     image.NewNineSlice(idle, [3]int{4, 11, 4}, [3]int{2, 2, 2}),
-			Hover:    image.NewNineSlice(idle, [3]int{4, 11, 4}, [3]int{2, 2, 2}),
-			Disabled: image.NewNineSlice(disabled, [3]int{4, 11, 4}, [3]int{2, 2, 2}),
-		},
-
-		fillImage: &widget.ProgressBarImage{
-			Idle:     image.NewNineSlice(fill_idle, [3]int{4, 11, 4}, [3]int{2, 2, 2}),
-			Hover:    image.NewNineSlice(fill_idle, [3]int{4, 11, 4}, [3]int{2, 2, 2}),
-			Disabled: image.NewNineSlice(fill_idle, [3]int{4, 11, 4}, [3]int{2, 2, 2}),
-		},
-	}, nil
-}
 func newPanelResources() (*panelResources, error) {
-	i, err := loadImageNineSlice("resources/menu/ui/panel-idle.png", 10, 10)
+	i, err := loadImageNineSlice("resources/menu/ui/panel-idle.png", 10, 10, 1.0)
 	if err != nil {
 		return nil, err
 	}
-	t, err := loadImageNineSlice("resources/menu/ui/titlebar-idle.png", 10, 10)
+	t, err := loadImageNineSlice("resources/menu/ui/titlebar-idle.png", 10, 10, 1.0)
 	if err != nil {
 		return nil, err
 	}
@@ -704,7 +640,7 @@ func newTabBookResources(fonts *fonts) (*tabBookResources, error) {
 }
 
 func newHeaderResources(fonts *fonts) (*headerResources, error) {
-	bg, err := loadImageNineSlice("resources/menu/ui/header.png", 446, 9)
+	bg, err := loadImageNineSlice("resources/menu/ui/header.png", 446, 9, 1.0)
 	if err != nil {
 		return nil, err
 	}
@@ -721,135 +657,6 @@ func newHeaderResources(fonts *fonts) (*headerResources, error) {
 
 		face:  fonts.bigTitleFace,
 		color: hexToColor(headerColor),
-	}, nil
-}
-
-func newTextInputResources(fonts *fonts) (*textInputResources, error) {
-	idle, _, err := newImageFromFile("resources/menu/ui/text-input-idle.png")
-	if err != nil {
-		return nil, err
-	}
-
-	disabled, _, err := newImageFromFile("resources/menu/ui/text-input-disabled.png")
-	if err != nil {
-		return nil, err
-	}
-
-	return &textInputResources{
-		image: &widget.TextInputImage{
-			Idle:     image.NewNineSlice(idle, [3]int{9, 14, 6}, [3]int{9, 14, 6}),
-			Disabled: image.NewNineSlice(disabled, [3]int{9, 14, 6}, [3]int{9, 14, 6}),
-		},
-
-		padding: widget.Insets{
-			Left:   8,
-			Right:  8,
-			Top:    4,
-			Bottom: 4,
-		},
-
-		face: fonts.face,
-
-		color: &widget.TextInputColor{
-			Idle:          hexToColor(textIdleColor),
-			Disabled:      hexToColor(textDisabledColor),
-			Caret:         hexToColor(textInputCaretColor),
-			DisabledCaret: hexToColor(textInputDisabledCaretColor),
-		},
-	}, nil
-}
-
-func newTextAreaResources(fonts *fonts) (*textAreaResources, error) {
-	idle, _, err := newImageFromFile("resources/menu/ui/list-idle.png")
-	if err != nil {
-		return nil, err
-	}
-
-	disabled, _, err := newImageFromFile("resources/menu/ui/list-disabled.png")
-	if err != nil {
-		return nil, err
-	}
-
-	mask, _, err := newImageFromFile("resources/menu/ui/list-mask.png")
-	if err != nil {
-		return nil, err
-	}
-
-	trackIdle, _, err := newImageFromFile("resources/menu/ui/list-track-idle.png")
-	if err != nil {
-		return nil, err
-	}
-
-	trackDisabled, _, err := newImageFromFile("resources/menu/ui/list-track-disabled.png")
-	if err != nil {
-		return nil, err
-	}
-
-	handleIdle, _, err := newImageFromFile("resources/menu/ui/slider-handle-idle.png")
-	if err != nil {
-		return nil, err
-	}
-
-	handleHover, _, err := newImageFromFile("resources/menu/ui/slider-handle-hover.png")
-	if err != nil {
-		return nil, err
-	}
-
-	return &textAreaResources{
-		image: &widget.ScrollContainerImage{
-			Idle:     image.NewNineSlice(idle, [3]int{25, 12, 22}, [3]int{25, 12, 25}),
-			Disabled: image.NewNineSlice(disabled, [3]int{25, 12, 22}, [3]int{25, 12, 25}),
-			Mask:     image.NewNineSlice(mask, [3]int{26, 10, 23}, [3]int{26, 10, 26}),
-		},
-
-		track: &widget.SliderTrackImage{
-			Idle:     image.NewNineSlice(trackIdle, [3]int{5, 0, 0}, [3]int{25, 12, 25}),
-			Hover:    image.NewNineSlice(trackIdle, [3]int{5, 0, 0}, [3]int{25, 12, 25}),
-			Disabled: image.NewNineSlice(trackDisabled, [3]int{0, 5, 0}, [3]int{25, 12, 25}),
-		},
-
-		trackPadding: widget.Insets{
-			Top:    5,
-			Bottom: 24,
-		},
-
-		handle: &widget.ButtonImage{
-			Idle:     image.NewNineSliceSimple(handleIdle, 0, 5),
-			Hover:    image.NewNineSliceSimple(handleHover, 0, 5),
-			Pressed:  image.NewNineSliceSimple(handleHover, 0, 5),
-			Disabled: image.NewNineSliceSimple(handleIdle, 0, 5),
-		},
-
-		handleSize: 5,
-		face:       fonts.face,
-
-		entryPadding: widget.Insets{
-			Left:   30,
-			Right:  30,
-			Top:    2,
-			Bottom: 2,
-		},
-	}, nil
-}
-
-func newToolTipResources(fonts *fonts) (*toolTipResources, error) {
-	bg, _, err := newImageFromFile("resources/menu/ui/tool-tip.png")
-	if err != nil {
-		return nil, err
-	}
-
-	return &toolTipResources{
-		background: image.NewNineSlice(bg, [3]int{19, 6, 13}, [3]int{19, 5, 13}),
-
-		padding: widget.Insets{
-			Left:   15,
-			Right:  15,
-			Top:    10,
-			Bottom: 10,
-		},
-
-		face:  fonts.toolTipFace,
-		color: hexToColor(toolTipColor),
 	}, nil
 }
 
