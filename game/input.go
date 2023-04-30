@@ -54,24 +54,32 @@ func (g *Game) handleInput() {
 		moveModifier = 2.0
 	}
 
-	switch {
-	case ebiten.IsKeyPressed(ebiten.KeyControl) && g.osType == osTypeDesktop:
+	if ebiten.IsKeyPressed(ebiten.KeyControl) && g.osType == osTypeDesktop {
 		// debug cursor mode not intended for browser purposes
 		if g.mouseMode != MouseModeCursor {
 			ebiten.SetCursorMode(ebiten.CursorModeVisible)
 			g.mouseMode = MouseModeCursor
 		}
-
-	case ebiten.IsKeyPressed(ebiten.KeyAlt):
-		if g.mouseMode != MouseModeMove {
-			ebiten.SetCursorMode(ebiten.CursorModeCaptured)
-			g.mouseMode = MouseModeMove
-			g.mouseX, g.mouseY = math.MinInt32, math.MinInt32
+	} else if inpututil.IsKeyJustReleased(ebiten.KeyControl) {
+		if g.mouseMode == MouseModeCursor {
+			g.mouseMode = MouseModeLook
 		}
+	}
 
-	case !g.menu.active && g.mouseMode != MouseModeLook:
+	if ebiten.IsKeyPressed(ebiten.KeyAlt) {
+		if g.mouseMode != MouseModeMove {
+			g.mouseMode = MouseModeMove
+		}
+	} else if inpututil.IsKeyJustReleased(ebiten.KeyAlt) {
+		if g.mouseMode == MouseModeMove {
+			g.mouseMode = MouseModeLook
+		}
+	}
+
+	if (g.mouseMode == MouseModeLook || g.mouseMode == MouseModeMove) && ebiten.CursorMode() != ebiten.CursorModeCaptured {
 		ebiten.SetCursorMode(ebiten.CursorModeCaptured)
-		g.mouseMode = MouseModeLook
+
+		// reset initial mouse capture position
 		g.mouseX, g.mouseY = math.MinInt32, math.MinInt32
 	}
 
@@ -101,7 +109,7 @@ func (g *Game) handleInput() {
 
 		switch {
 		case g.mouseX == math.MinInt32 && g.mouseY == math.MinInt32:
-			// initialize first position to establish delta
+			// set initial mouse capture position to establish delta
 			if x != 0 && y != 0 {
 				g.mouseX, g.mouseY = x, y
 			}
