@@ -13,11 +13,12 @@ import (
 )
 
 type DemoMenu struct {
-	active bool
-	ui     *ebitenui.UI
-	root   *widget.Container
-	res    *uiResources
-	game   *Game
+	active  bool
+	closing bool
+	ui      *ebitenui.UI
+	root    *widget.Container
+	res     *uiResources
+	game    *Game
 
 	fontScale float64
 	marginX   int
@@ -207,6 +208,7 @@ func (g *Game) closeMenu() {
 	g.mouseMode = MouseModeLook
 	g.mouseX, g.mouseY = math.MinInt32, math.MinInt32
 	g.menu.active = false
+	g.menu.closing = true
 	g.paused = false
 	ebiten.SetCursorMode(ebiten.CursorModeCaptured)
 }
