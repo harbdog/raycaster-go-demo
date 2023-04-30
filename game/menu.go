@@ -99,7 +99,7 @@ func (m *DemoMenu) initResources() {
 		menuSize = menuWidth
 	}
 
-	m.fontScale = geom.Clamp(float64(menuSize)*0.002, 0.6, 2.4)
+	m.fontScale = geom.Clamp(float64(menuSize)*0.002, 0.6, 2.0)
 
 	m.marginX = (m.game.screenWidth - menuWidth) / 2
 	m.marginY = (m.game.screenHeight - menuHeight) / 2
@@ -204,11 +204,11 @@ func (g *Game) openMenu() {
 }
 
 func (g *Game) closeMenu() {
-	g.mouseX, g.mouseY = math.MinInt32, math.MinInt32
-	ebiten.SetCursorMode(ebiten.CursorModeCaptured)
-	g.paused = false
-	g.menu.active = false
 	g.mouseMode = MouseModeLook
+	g.mouseX, g.mouseY = math.MinInt32, math.MinInt32
+	g.menu.active = false
+	g.paused = false
+	ebiten.SetCursorMode(ebiten.CursorModeCaptured)
 }
 
 func (m *DemoMenu) update() {
