@@ -1,6 +1,9 @@
 package game
 
 import (
+	"fmt"
+	"image/color"
+
 	"github.com/ebitenui/ebitenui/image"
 	"github.com/ebitenui/ebitenui/widget"
 )
@@ -159,6 +162,95 @@ func newListComboButton(entries []interface{}, selectedEntry interface{}, button
 	}
 
 	return c
+}
+
+func (m *DemoMenu) newColorPickerRGB(label string, clr *color.NRGBA, f widget.SliderChangedHandlerFunc) *widget.Container {
+	// create custom RGB selection group container
+	res := m.res
+	picker := widget.NewContainer(
+		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+			Stretch: true,
+		})),
+		widget.ContainerOpts.Layout(widget.NewGridLayout(
+			widget.GridLayoutOpts.Columns(4),
+			widget.GridLayoutOpts.Stretch([]bool{true, true, true, true}, nil),
+			widget.GridLayoutOpts.Spacing(m.padding, m.padding))))
+
+	pickerLabel := widget.NewLabel(widget.LabelOpts.Text(label, res.label.face, res.label.text))
+	var rText, gText, bText *widget.Label
+	var rgbValue *widget.Container
+
+	rSlider := widget.NewSlider(
+		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+			Position: widget.RowLayoutPositionCenter,
+		}), widget.WidgetOpts.MinSize(50, 6)),
+		widget.SliderOpts.MinMax(0, 255),
+		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
+		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),
+		widget.SliderOpts.TrackOffset(5),
+		widget.SliderOpts.ChangedHandler(func(args *widget.SliderChangedEventArgs) {
+			rText.Label = fmt.Sprintf("R: %d", args.Current)
+			clr.R = uint8(args.Current)
+			rgbValue.BackgroundImage = image.NewNineSliceColor(*clr)
+		}),
+		widget.SliderOpts.ChangedHandler(f),
+	)
+	rSlider.Current = int(clr.R)
+
+	gSlider := widget.NewSlider(
+		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+			Position: widget.RowLayoutPositionCenter,
+		}), widget.WidgetOpts.MinSize(50, 6)),
+		widget.SliderOpts.MinMax(0, 255),
+		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
+		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),
+		widget.SliderOpts.TrackOffset(5),
+		widget.SliderOpts.ChangedHandler(func(args *widget.SliderChangedEventArgs) {
+			gText.Label = fmt.Sprintf("G: %d", args.Current)
+			clr.G = uint8(args.Current)
+			rgbValue.BackgroundImage = image.NewNineSliceColor(*clr)
+		}),
+		widget.SliderOpts.ChangedHandler(f),
+	)
+	gSlider.Current = int(clr.G)
+
+	bSlider := widget.NewSlider(
+		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+			Position: widget.RowLayoutPositionCenter,
+		}), widget.WidgetOpts.MinSize(50, 6)),
+		widget.SliderOpts.MinMax(0, 255),
+		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
+		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),
+		widget.SliderOpts.TrackOffset(5),
+		widget.SliderOpts.ChangedHandler(func(args *widget.SliderChangedEventArgs) {
+			bText.Label = fmt.Sprintf("B: %d", args.Current)
+			clr.B = uint8(args.Current)
+			rgbValue.BackgroundImage = image.NewNineSliceColor(*clr)
+		}),
+		widget.SliderOpts.ChangedHandler(f),
+	)
+	bSlider.Current = int(clr.B)
+
+	rText = widget.NewLabel(widget.LabelOpts.Text(fmt.Sprintf("R: %d", rSlider.Current), res.label.face, res.label.text))
+	gText = widget.NewLabel(widget.LabelOpts.Text(fmt.Sprintf("G: %d", gSlider.Current), res.label.face, res.label.text))
+	bText = widget.NewLabel(widget.LabelOpts.Text(fmt.Sprintf("B: %d", bSlider.Current), res.label.face, res.label.text))
+
+	rgbBackground := image.NewNineSliceColor(clr)
+	rgbValue = widget.NewContainer(widget.ContainerOpts.BackgroundImage(rgbBackground))
+
+	// RGB row 1: labels
+	picker.AddChild(pickerLabel)
+	picker.AddChild(rText)
+	picker.AddChild(gText)
+	picker.AddChild(bText)
+
+	// RGB row 2: color swatch and sliders
+	picker.AddChild(rgbValue)
+	picker.AddChild(rSlider)
+	picker.AddChild(gSlider)
+	picker.AddChild(bSlider)
+
+	return picker
 }
 
 func (m *DemoMenu) newSeparator(res *uiResources, ld interface{}) widget.PreferredSizeLocateableWidget {

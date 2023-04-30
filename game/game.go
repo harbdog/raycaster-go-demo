@@ -74,8 +74,8 @@ type Game struct {
 	// lighting settings
 	lightFalloff       float64
 	globalIllumination float64
-	minLightRGB        color.NRGBA
-	maxLightRGB        color.NRGBA
+	minLightRGB        *color.NRGBA
+	maxLightRGB        *color.NRGBA
 
 	//--array of levels, levels refer to "floors" of the world--//
 	mapObj       *model.Map
@@ -176,8 +176,8 @@ func NewGame() *Game {
 	// set demo lighting settings
 	g.setLightFalloff(-200)
 	g.setGlobalIllumination(500)
-	minLightRGB := color.NRGBA{R: 76, G: 76, B: 76}
-	maxLightRGB := color.NRGBA{R: 255, G: 255, B: 255}
+	minLightRGB := &color.NRGBA{R: 76, G: 76, B: 76, A: 255}
+	maxLightRGB := &color.NRGBA{R: 255, G: 255, B: 255, A: 255}
 	g.setLightRGB(minLightRGB, maxLightRGB)
 
 	// init menu system
@@ -506,10 +506,10 @@ func (g *Game) setGlobalIllumination(globalIllumination float64) {
 	g.camera.SetGlobalIllumination(g.globalIllumination)
 }
 
-func (g *Game) setLightRGB(minLightRGB, maxLightRGB color.NRGBA) {
+func (g *Game) setLightRGB(minLightRGB, maxLightRGB *color.NRGBA) {
 	g.minLightRGB = minLightRGB
 	g.maxLightRGB = maxLightRGB
-	g.camera.SetLightRGB(g.minLightRGB, g.maxLightRGB)
+	g.camera.SetLightRGB(*g.minLightRGB, *g.maxLightRGB)
 }
 
 func (g *Game) setVsyncEnabled(enableVsync bool) {

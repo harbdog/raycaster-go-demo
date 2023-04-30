@@ -2,9 +2,7 @@ package game
 
 import (
 	"fmt"
-	"image/color"
 
-	"github.com/ebitenui/ebitenui/image"
 	"github.com/ebitenui/ebitenui/widget"
 )
 
@@ -358,174 +356,16 @@ func lightingPage(m *DemoMenu) *page {
 	globalRow.AddChild(globalValueText)
 
 	// min lighting RGB selection
-	minGrid := widget.NewContainer(
-		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
-			Stretch: true,
-		})),
-		widget.ContainerOpts.Layout(widget.NewGridLayout(
-			widget.GridLayoutOpts.Columns(4),
-			widget.GridLayoutOpts.Stretch([]bool{true, true, true, true}, nil),
-			widget.GridLayoutOpts.Spacing(5, 5))))
-	c.AddChild(minGrid)
-
-	minLabel := widget.NewLabel(widget.LabelOpts.Text("Min Light", res.label.face, res.label.text))
-	var rMinText, gMinText, bMinText *widget.Label
-	var rgbMinValue *widget.Container
-
-	rMinSlider := widget.NewSlider(
-		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
-			Position: widget.RowLayoutPositionCenter,
-		}), widget.WidgetOpts.MinSize(50, 8)),
-		widget.SliderOpts.MinMax(0, 255),
-		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
-		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),
-		widget.SliderOpts.TrackOffset(5),
-		widget.SliderOpts.ChangedHandler(func(args *widget.SliderChangedEventArgs) {
-			rMinText.Label = fmt.Sprintf("R: %d", args.Current)
-			rgb := m.game.minLightRGB
-			m.game.setLightRGB(color.NRGBA{R: uint8(args.Current), G: rgb.G, B: rgb.B, A: 255}, m.game.maxLightRGB)
-			rgbMinValue.BackgroundImage = image.NewNineSliceColor(m.game.minLightRGB)
-		}),
-	)
-	rMinSlider.Current = int(m.game.minLightRGB.R)
-
-	gMinSlider := widget.NewSlider(
-		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
-			Position: widget.RowLayoutPositionCenter,
-		}), widget.WidgetOpts.MinSize(50, 8)),
-		widget.SliderOpts.MinMax(0, 255),
-		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
-		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),
-		widget.SliderOpts.TrackOffset(5),
-		widget.SliderOpts.ChangedHandler(func(args *widget.SliderChangedEventArgs) {
-			gMinText.Label = fmt.Sprintf("G: %d", args.Current)
-			rgb := m.game.minLightRGB
-			m.game.setLightRGB(color.NRGBA{R: rgb.R, G: uint8(args.Current), B: rgb.B, A: 255}, m.game.maxLightRGB)
-			rgbMinValue.BackgroundImage = image.NewNineSliceColor(m.game.minLightRGB)
-		}),
-	)
-	gMinSlider.Current = int(m.game.minLightRGB.G)
-
-	bMinSlider := widget.NewSlider(
-		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
-			Position: widget.RowLayoutPositionCenter,
-		}), widget.WidgetOpts.MinSize(50, 8)),
-		widget.SliderOpts.MinMax(0, 255),
-		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
-		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),
-		widget.SliderOpts.TrackOffset(5),
-		widget.SliderOpts.ChangedHandler(func(args *widget.SliderChangedEventArgs) {
-			bMinText.Label = fmt.Sprintf("B: %d", args.Current)
-			rgb := m.game.minLightRGB
-			m.game.setLightRGB(color.NRGBA{R: rgb.R, G: rgb.G, B: uint8(args.Current), A: 255}, m.game.maxLightRGB)
-			rgbMinValue.BackgroundImage = image.NewNineSliceColor(m.game.minLightRGB)
-		}),
-	)
-	bMinSlider.Current = int(m.game.minLightRGB.B)
-
-	rMinText = widget.NewLabel(widget.LabelOpts.Text(fmt.Sprintf("R: %d", rMinSlider.Current), res.label.face, res.label.text))
-	gMinText = widget.NewLabel(widget.LabelOpts.Text(fmt.Sprintf("G: %d", gMinSlider.Current), res.label.face, res.label.text))
-	bMinText = widget.NewLabel(widget.LabelOpts.Text(fmt.Sprintf("B: %d", bMinSlider.Current), res.label.face, res.label.text))
-
-	rgbMinBackground := image.NewNineSliceColor(m.game.minLightRGB)
-	rgbMinValue = widget.NewContainer(widget.ContainerOpts.BackgroundImage(rgbMinBackground))
-
-	// min RGB row 1
-	minGrid.AddChild(minLabel)
-	minGrid.AddChild(rMinText)
-	minGrid.AddChild(gMinText)
-	minGrid.AddChild(bMinText)
-
-	// min RGB row 2
-	minGrid.AddChild(rgbMinValue)
-	minGrid.AddChild(rMinSlider)
-	minGrid.AddChild(gMinSlider)
-	minGrid.AddChild(bMinSlider)
+	pickerMinRGB := m.newColorPickerRGB("Min Light", m.game.minLightRGB, func(args *widget.SliderChangedEventArgs) {
+		m.game.setLightRGB(m.game.minLightRGB, m.game.maxLightRGB)
+	})
+	c.AddChild(pickerMinRGB)
 
 	// max lighting RGB selection
-	maxGrid := widget.NewContainer(
-		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
-			Stretch: true,
-		})),
-		widget.ContainerOpts.Layout(widget.NewGridLayout(
-			widget.GridLayoutOpts.Columns(4),
-			widget.GridLayoutOpts.Stretch([]bool{true, true, true, true}, nil),
-			widget.GridLayoutOpts.Spacing(5, 5))))
-	c.AddChild(maxGrid)
-
-	maxLabel := widget.NewLabel(widget.LabelOpts.Text("Max Light", res.label.face, res.label.text))
-	var rMaxText, gMaxText, bMaxText *widget.Label
-	var rgbMaxValue *widget.Container
-
-	rMaxSlider := widget.NewSlider(
-		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
-			Position: widget.RowLayoutPositionCenter,
-		}), widget.WidgetOpts.MinSize(50, 8)),
-		widget.SliderOpts.MinMax(0, 255),
-		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
-		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),
-		widget.SliderOpts.TrackOffset(5),
-		widget.SliderOpts.ChangedHandler(func(args *widget.SliderChangedEventArgs) {
-			rMaxText.Label = fmt.Sprintf("R: %d", args.Current)
-			rgb := m.game.maxLightRGB
-			m.game.setLightRGB(m.game.minLightRGB, color.NRGBA{R: uint8(args.Current), G: rgb.G, B: rgb.B, A: 255})
-			rgbMaxValue.BackgroundImage = image.NewNineSliceColor(m.game.maxLightRGB)
-		}),
-	)
-	rMaxSlider.Current = int(m.game.maxLightRGB.R)
-
-	gMaxSlider := widget.NewSlider(
-		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
-			Position: widget.RowLayoutPositionCenter,
-		}), widget.WidgetOpts.MinSize(50, 8)),
-		widget.SliderOpts.MinMax(0, 255),
-		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
-		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),
-		widget.SliderOpts.TrackOffset(5),
-		widget.SliderOpts.ChangedHandler(func(args *widget.SliderChangedEventArgs) {
-			gMaxText.Label = fmt.Sprintf("G: %d", args.Current)
-			rgb := m.game.maxLightRGB
-			m.game.setLightRGB(m.game.minLightRGB, color.NRGBA{R: rgb.R, G: uint8(args.Current), B: rgb.B, A: 255})
-			rgbMaxValue.BackgroundImage = image.NewNineSliceColor(m.game.maxLightRGB)
-		}),
-	)
-	gMaxSlider.Current = int(m.game.maxLightRGB.G)
-
-	bMaxSlider := widget.NewSlider(
-		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
-			Position: widget.RowLayoutPositionCenter,
-		}), widget.WidgetOpts.MinSize(50, 8)),
-		widget.SliderOpts.MinMax(0, 255),
-		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
-		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),
-		widget.SliderOpts.TrackOffset(5),
-		widget.SliderOpts.ChangedHandler(func(args *widget.SliderChangedEventArgs) {
-			bMaxText.Label = fmt.Sprintf("B: %d", args.Current)
-			rgb := m.game.maxLightRGB
-			m.game.setLightRGB(m.game.minLightRGB, color.NRGBA{R: rgb.R, G: rgb.G, B: uint8(args.Current), A: 255})
-			rgbMaxValue.BackgroundImage = image.NewNineSliceColor(m.game.maxLightRGB)
-		}),
-	)
-	bMaxSlider.Current = int(m.game.maxLightRGB.B)
-
-	rMaxText = widget.NewLabel(widget.LabelOpts.Text(fmt.Sprintf("R: %d", rMaxSlider.Current), res.label.face, res.label.text))
-	gMaxText = widget.NewLabel(widget.LabelOpts.Text(fmt.Sprintf("G: %d", gMaxSlider.Current), res.label.face, res.label.text))
-	bMaxText = widget.NewLabel(widget.LabelOpts.Text(fmt.Sprintf("B: %d", bMaxSlider.Current), res.label.face, res.label.text))
-
-	rgbMaxBackground := image.NewNineSliceColor(m.game.maxLightRGB)
-	rgbMaxValue = widget.NewContainer(widget.ContainerOpts.BackgroundImage(rgbMaxBackground))
-
-	// max RGB row 1
-	maxGrid.AddChild(maxLabel)
-	maxGrid.AddChild(rMaxText)
-	maxGrid.AddChild(gMaxText)
-	maxGrid.AddChild(bMaxText)
-
-	// max RGB row 2
-	maxGrid.AddChild(rgbMaxValue)
-	maxGrid.AddChild(rMaxSlider)
-	maxGrid.AddChild(gMaxSlider)
-	maxGrid.AddChild(bMaxSlider)
+	pickerMaxRGB := m.newColorPickerRGB("Max Light", m.game.maxLightRGB, func(args *widget.SliderChangedEventArgs) {
+		m.game.setLightRGB(m.game.minLightRGB, m.game.maxLightRGB)
+	})
+	c.AddChild(pickerMaxRGB)
 
 	return &page{
 		title:   "Lighting",
