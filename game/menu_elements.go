@@ -236,7 +236,18 @@ func (m *DemoMenu) newColorPickerRGB(label string, clr *color.NRGBA, f widget.Sl
 	bText = widget.NewLabel(widget.LabelOpts.Text(fmt.Sprintf("B: %d", bSlider.Current), res.label.face, res.label.text))
 
 	rgbBackground := image.NewNineSliceColor(clr)
-	rgbValue = widget.NewContainer(widget.ContainerOpts.BackgroundImage(rgbBackground))
+	rgbValue = widget.NewContainer(
+		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+			Stretch: false,
+		})),
+		widget.ContainerOpts.Layout(widget.NewRowLayout(widget.RowLayoutOpts.Padding(widget.Insets{
+			Top:    m.padding,
+			Bottom: m.padding,
+			Left:   m.padding,
+			Right:  m.padding,
+		}))),
+		widget.ContainerOpts.BackgroundImage(rgbBackground),
+	)
 
 	// RGB row 1: labels
 	picker.AddChild(pickerLabel)
