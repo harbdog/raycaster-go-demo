@@ -137,7 +137,7 @@ func displayPage(m *DemoMenu) *page {
 			widget.WidgetOpts.LayoutData(widget.RowLayoutData{
 				Position: widget.RowLayoutPositionCenter,
 			}),
-			widget.WidgetOpts.MinSize(200, 6),
+			widget.WidgetOpts.MinSize(100, 6),
 		),
 		widget.SliderOpts.MinMax(60, 120),
 		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
@@ -238,7 +238,7 @@ func renderPage(m *DemoMenu) *page {
 	distanceSlider := widget.NewSlider(
 		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
 			Position: widget.RowLayoutPositionCenter,
-		}), widget.WidgetOpts.MinSize(200, 6)),
+		}), widget.WidgetOpts.MinSize(100, 6)),
 		widget.SliderOpts.MinMax(-1, 100),
 		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
 		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),
@@ -297,7 +297,7 @@ func lightingPage(m *DemoMenu) *page {
 	falloffSlider := widget.NewSlider(
 		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
 			Position: widget.RowLayoutPositionCenter,
-		}), widget.WidgetOpts.MinSize(200, 6)),
+		}), widget.WidgetOpts.MinSize(100, 6)),
 		widget.SliderOpts.MinMax(-500, 500),
 		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
 		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),
@@ -334,7 +334,7 @@ func lightingPage(m *DemoMenu) *page {
 	globalSlider := widget.NewSlider(
 		widget.SliderOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
 			Position: widget.RowLayoutPositionCenter,
-		}), widget.WidgetOpts.MinSize(200, 6)),
+		}), widget.WidgetOpts.MinSize(100, 6)),
 		widget.SliderOpts.MinMax(0, 1000),
 		widget.SliderOpts.Images(res.slider.trackImage, res.slider.handle),
 		widget.SliderOpts.FixedHandleSize(res.slider.handleSize),
