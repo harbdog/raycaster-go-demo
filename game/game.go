@@ -358,7 +358,19 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		op := &ebiten.DrawImageOptions{}
 		op.Filter = ebiten.FilterNearest
 
-		weaponScale := w.Scale() * g.renderScale
+		// determine base size of weapon based on window size compared to image size
+		compSize := g.screenHeight
+		if g.screenWidth < g.screenHeight {
+			compSize = g.screenWidth
+		}
+
+		drawScale := 1.0
+		if w.H != compSize/3 {
+			// weapon should only take up 1/3rd of screen space
+			drawScale = (float64(compSize) / 3) / float64(w.H)
+		}
+
+		weaponScale := w.Scale() * drawScale * g.renderScale
 		op.GeoM.Scale(weaponScale, weaponScale)
 		op.GeoM.Translate(
 			float64(g.width)/2-float64(w.W)*weaponScale/2,
