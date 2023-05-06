@@ -576,9 +576,10 @@ func (g *Game) Rotate(rSpeed float64) {
 	g.player.Angle += rSpeed
 
 	pi2 := geom.Pi2
-	if g.player.Angle >= pi2 {
-		g.player.Angle = pi2 - g.player.Angle
-	} else if g.player.Angle <= -pi2 {
+	for g.player.Angle >= pi2 {
+		g.player.Angle = g.player.Angle - pi2
+	}
+	for g.player.Angle <= -pi2 {
 		g.player.Angle = g.player.Angle + pi2
 	}
 
