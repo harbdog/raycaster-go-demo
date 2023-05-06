@@ -48,6 +48,7 @@ type Game struct {
 	renderScale  float64
 	fullscreen   bool
 	vsync        bool
+	opengl       bool
 	fovDegrees   float64
 	fovDepth     float64
 
@@ -115,6 +116,10 @@ func NewGame() *Game {
 
 	// default TPS is 60
 	// ebiten.SetMaxTPS(60)
+
+	if g.opengl {
+		os.Setenv("EBITENGINE_GRAPHICS_LIBRARY", "opengl")
+	}
 
 	// use scale to keep the desired window width and height
 	g.setResolution(g.screenWidth, g.screenHeight)
@@ -229,6 +234,11 @@ func (g *Game) initConfig() {
 		viper.SetDefault("screen.renderScale", 1.0)
 	}
 
+	if runtime.GOOS == "windows" {
+		// default windows to opengl for better performance
+		viper.SetDefault("screen.opengl", true)
+	}
+
 	err := viper.ReadInConfig()
 	if err != nil && g.debug {
 		fmt.Print(err)
@@ -241,6 +251,7 @@ func (g *Game) initConfig() {
 	g.renderScale = viper.GetFloat64("screen.renderScale")
 	g.fullscreen = viper.GetBool("screen.fullscreen")
 	g.vsync = viper.GetBool("screen.vsync")
+	g.opengl = viper.GetBool("screen.opengl")
 	g.renderDistance = viper.GetFloat64("screen.renderDistance")
 	g.initRenderFloorTex = viper.GetBool("screen.renderFloor")
 	g.showSpriteBoxes = viper.GetBool("showSpriteBoxes")
