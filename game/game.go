@@ -575,12 +575,11 @@ func (g *Game) Strafe(sSpeed float64) {
 func (g *Game) Rotate(rSpeed float64) {
 	g.player.Angle += rSpeed
 
-	pi2 := geom.Pi2
-	for g.player.Angle >= pi2 {
-		g.player.Angle = g.player.Angle - pi2
+	for g.player.Angle > geom.Pi {
+		g.player.Angle = g.player.Angle - geom.Pi2
 	}
-	for g.player.Angle <= -pi2 {
-		g.player.Angle = g.player.Angle + pi2
+	for g.player.Angle <= -geom.Pi {
+		g.player.Angle = g.player.Angle + geom.Pi2
 	}
 
 	g.player.Moved = true
