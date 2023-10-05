@@ -423,10 +423,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// draw raycasted scene
 	op := &ebiten.DrawImageOptions{}
 	if g.renderScale < 1 {
-		op.Filter = ebiten.FilterNearest
-		op.GeoM.Scale(1/g.renderScale, 1/g.renderScale)
+		// op.Filter = ebiten.FilterNearest
+		// op.GeoM.Scale(1/g.renderScale, 1/g.renderScale)
+		// TODO: add config setting to scale using FSR or not?
+		g.DrawFSR(screen, g.scene)
+	} else {
+		screen.DrawImage(g.scene, op)
 	}
-	screen.DrawImage(g.scene, op)
 
 	// draw minimap
 	mm := g.miniMap()
