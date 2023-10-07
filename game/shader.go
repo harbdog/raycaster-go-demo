@@ -219,11 +219,14 @@ func FsrEasuF(ip vec2, con0, con1, con2, con3 vec4) vec3 {
 	// Normalize and dering.
 	return min(max4, max(min4, aC/aW))
 }
+
+var Scale vec2
+
 func Fragment(dst vec4, src vec2, color vec4) vec4 {
 	origin, _ := imageSrcRegionOnTexture()
 	uv := src - origin
 	con0, con1, con2, con3 := FsrEasuCon()
-	c := FsrEasuF(uv*2, con0, con1, con2, con3)
+	c := FsrEasuF(uv*Scale, con0, con1, con2, con3)
 	return vec4(c.xyz, 1)
 }
 `)
@@ -282,7 +285,7 @@ func FsrRcasF(ip vec2, con float) vec3 {
 	) * con
 	// Apply noise removal.
 	//#ifdef FSR_RCAS_DENOISE
-	  lobe *= nz;
+	  lobe *= nz
 	  //#endif
 	// Resolve, which needs the medium precision rcp approximation to avoid visible tonality changes.
 	return (lobe*(b+d+h+f) + e) / (4.*lobe + 1.)
@@ -291,12 +294,14 @@ func FsrRcasLoadF(p vec2) vec4 {
 	origin, _ := imageSrcRegionOnTexture()
 	return imageSrc0UnsafeAt(p + origin)
 }
+
+var Sharpness float
+
 func Fragment(dst vec4, src vec2, color vec4) vec4 {
 	origin, size := imageSrcRegionOnTexture()
 	// Set up constants
-	sharpness := 0.05 // was 0.2
 	//division := 0.5 + .3*sin(iTime*.3)
-	con := FsrRcasCon(sharpness)
+	con := FsrRcasCon(Sharpness)
 	// Perform RCAS pass
 	col := FsrRcasF(src-origin, con)
 	// Source image
@@ -340,6 +345,8 @@ func init() {
 // Courtesy of Zyko!
 // - https://gist.github.com/Zyko0/0b9244d6780eeb2337162c6dbdf9b787
 func (g *Game) DrawFSR(screen, sourceImg *ebiten.Image) {
+	scaleX := float64(screen.Bounds().Dx()) / float64(sourceImg.Bounds().Dx())
+	scaleY := float64(screen.Bounds().Dy()) / float64(sourceImg.Bounds().Dy())
 
 	initFsrImages := pass0Img == nil || finalImg == nil
 	// check for screen size changes after first time initialization
@@ -389,6 +396,11 @@ func (g *Game) DrawFSR(screen, sourceImg *ebiten.Image) {
 		Images: [4]*ebiten.Image{
 			sourceImg,
 		},
+		Uniforms: map[string]interface{}{
+			"Scale": []float64{
+				scaleX, scaleY,
+			},
+		},
 	})
 	// Final pass
 	// Redefine vertices for second pass
@@ -422,6 +434,9 @@ func (g *Game) DrawFSR(screen, sourceImg *ebiten.Image) {
 	finalImg.DrawTrianglesShader(vertices, indices, fsr1Shader, &ebiten.DrawTrianglesShaderOptions{
 		Images: [4]*ebiten.Image{
 			pass0Img,
+		},
+		Uniforms: map[string]interface{}{
+			"Sharpness": 0.05,
 		},
 	})
 
