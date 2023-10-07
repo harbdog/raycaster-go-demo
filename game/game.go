@@ -48,6 +48,7 @@ type Game struct {
 	renderScale  float64
 	fullscreen   bool
 	vsync        bool
+	fsr          bool
 	opengl       bool
 	fovDegrees   float64
 	fovDepth     float64
@@ -220,6 +221,7 @@ func (g *Game) initConfig() {
 	viper.SetDefault("showSpriteBoxes", false)
 	viper.SetDefault("screen.fullscreen", false)
 	viper.SetDefault("screen.vsync", true)
+	viper.SetDefault("screen.fsr", false)
 	viper.SetDefault("screen.renderDistance", -1)
 	viper.SetDefault("screen.renderFloor", true)
 	viper.SetDefault("screen.fovDegrees", 68)
@@ -251,6 +253,7 @@ func (g *Game) initConfig() {
 	g.renderScale = viper.GetFloat64("screen.renderScale")
 	g.fullscreen = viper.GetBool("screen.fullscreen")
 	g.vsync = viper.GetBool("screen.vsync")
+	g.fsr = viper.GetBool("screen.fsr")
 	g.opengl = viper.GetBool("screen.opengl")
 	g.renderDistance = viper.GetFloat64("screen.renderDistance")
 	g.initRenderFloorTex = viper.GetBool("screen.renderFloor")
@@ -422,12 +425,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	// draw raycasted scene
 	op := &ebiten.DrawImageOptions{}
-	if g.renderScale < 1 {
-		// op.Filter = ebiten.FilterNearest
-		// op.GeoM.Scale(1/g.renderScale, 1/g.renderScale)
-		// TODO: add config setting to scale using FSR or not?
+	if g.fsr {
 		g.DrawFSR(screen, g.scene)
 	} else {
+		if g.renderScale != 1.0 {
+			op.Filter = ebiten.FilterNearest
+			op.GeoM.Scale(1/g.renderScale, 1/g.renderScale)
+		}
 		screen.DrawImage(g.scene, op)
 	}
 

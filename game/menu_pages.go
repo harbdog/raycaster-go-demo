@@ -175,6 +175,8 @@ func displayPage(m *DemoMenu) *page {
 		0.5,
 		0.75,
 		1.0,
+		1.5,
+		2.0,
 	}
 
 	var selectedScaling interface{}
@@ -211,6 +213,12 @@ func displayPage(m *DemoMenu) *page {
 		m.game.setVsyncEnabled(args.State == widget.WidgetChecked)
 	}, res)
 	c.AddChild(vsCheckbox)
+
+	// FSR checkbox
+	fsrCheckbox := newCheckbox("Use FSR", m.game.fsr, func(args *widget.CheckboxChangedEventArgs) {
+		m.game.fsr = args.State == widget.WidgetChecked
+	}, res)
+	c.AddChild(fsrCheckbox)
 
 	return &page{
 		title:   "Display",
