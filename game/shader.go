@@ -344,21 +344,14 @@ func init() {
 
 // Courtesy of Zyko!
 // - https://gist.github.com/Zyko0/0b9244d6780eeb2337162c6dbdf9b787
-func (g *Game) DrawFSR(screen, sourceImg *ebiten.Image) {
-	scaleX := float64(screen.Bounds().Dx()) / float64(sourceImg.Bounds().Dx())
-	scaleY := float64(screen.Bounds().Dy()) / float64(sourceImg.Bounds().Dy())
+func DrawFSR(sourceImg *ebiten.Image, scale float64) *ebiten.Image {
+	fsrWidth, fsrHeight := int(float64(sourceImg.Bounds().Dx())*scale), int(float64(sourceImg.Bounds().Dy())*scale)
 
-	initFsrImages := pass0Img == nil || finalImg == nil
 	// check for screen size changes after first time initialization
-	if !initFsrImages &&
-		(pass0Img.Bounds().Dx() != screen.Bounds().Dx() || pass0Img.Bounds().Dy() != screen.Bounds().Dy()) {
-
-		initFsrImages = true
-	}
-
+	initFsrImages := pass0Img == nil || finalImg == nil || pass0Img.Bounds().Dx() != fsrWidth || pass0Img.Bounds().Dy() != fsrHeight
 	if initFsrImages {
-		pass0Img = ebiten.NewImage(screen.Bounds().Dx(), screen.Bounds().Dy())
-		finalImg = ebiten.NewImage(screen.Bounds().Dx(), screen.Bounds().Dy())
+		pass0Img = ebiten.NewImage(fsrWidth, fsrHeight)
+		finalImg = ebiten.NewImage(fsrWidth, fsrHeight)
 	}
 
 	// indices mapping vertices to form a 2D quad
@@ -398,7 +391,7 @@ func (g *Game) DrawFSR(screen, sourceImg *ebiten.Image) {
 		},
 		Uniforms: map[string]interface{}{
 			"Scale": []float64{
-				scaleX, scaleY,
+				scale, scale,
 			},
 		},
 	})
@@ -440,5 +433,5 @@ func (g *Game) DrawFSR(screen, sourceImg *ebiten.Image) {
 		},
 	})
 
-	screen.DrawImage(finalImg, nil)
+	return finalImg
 }
