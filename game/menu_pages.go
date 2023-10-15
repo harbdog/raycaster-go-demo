@@ -214,8 +214,6 @@ func displayPage(m *DemoMenu) *page {
 	fsrValues := []interface{}{
 		1.0,
 		2.0,
-		3.0,
-		4.0,
 	}
 
 	var selectedFSR interface{}
@@ -232,13 +230,13 @@ func displayPage(m *DemoMenu) *page {
 			if e.(float64) == 1.0 {
 				return "off"
 			}
-			return fmt.Sprintf("%0.1fx", e.(float64))
+			return fmt.Sprintf("%0.0fx", e.(float64))
 		},
 		func(e interface{}) string {
 			if e.(float64) == 1.0 {
 				return "off"
 			}
-			return fmt.Sprintf("%0.1fx", e.(float64))
+			return fmt.Sprintf("%0.0fx", e.(float64))
 		},
 		func(args *widget.ListComboButtonEntrySelectedEventArgs) {
 			s := args.Entry.(float64)
