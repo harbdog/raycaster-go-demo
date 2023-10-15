@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/ebitenui/ebitenui v0.5.2
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
-	github.com/hajimehoshi/ebiten/v2 v2.6.1
+	github.com/hajimehoshi/ebiten/v2 v2.6.2
 	github.com/harbdog/raycaster-go v1.9.0
 	github.com/jinzhu/copier v0.3.5
 	github.com/spf13/viper v1.15.0
