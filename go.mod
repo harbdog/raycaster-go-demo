@@ -1,6 +1,6 @@
 module github.com/harbdog/raycaster-go-demo
 
-go 1.17
+go 1.20
 
 require (
 	github.com/ebitenui/ebitenui v0.5.2
