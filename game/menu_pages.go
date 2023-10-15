@@ -200,6 +200,51 @@ func displayPage(m *DemoMenu) *page {
 		res)
 	scalingRow.AddChild(scalingCombo)
 
+	// FSR scaling combo box
+	fsrRow := widget.NewContainer(
+		widget.ContainerOpts.Layout(widget.NewRowLayout(
+			widget.RowLayoutOpts.Spacing(20),
+		)),
+	)
+	c.AddChild(fsrRow)
+
+	fsrLabel := widget.NewLabel(widget.LabelOpts.Text("FSR", res.label.face, res.label.text))
+	fsrRow.AddChild(fsrLabel)
+
+	fsrValues := []interface{}{
+		1.0,
+		2.0,
+	}
+
+	var selectedFSR interface{}
+	for _, s := range fsrValues {
+		if s == m.game.fsr {
+			selectedFSR = s
+		}
+	}
+
+	fsrCombo := newListComboButton(
+		fsrValues,
+		selectedFSR,
+		func(e interface{}) string {
+			if e.(float64) == 1.0 {
+				return "off"
+			}
+			return fmt.Sprintf("%0.0fx", e.(float64))
+		},
+		func(e interface{}) string {
+			if e.(float64) == 1.0 {
+				return "off"
+			}
+			return fmt.Sprintf("%0.0fx", e.(float64))
+		},
+		func(args *widget.ListComboButtonEntrySelectedEventArgs) {
+			s := args.Entry.(float64)
+			m.game.fsr = s
+		},
+		res)
+	fsrRow.AddChild(fsrCombo)
+
 	// fullscreen checkbox
 	fsCheckbox := newCheckbox("Fullscreen", m.game.fullscreen, func(args *widget.CheckboxChangedEventArgs) {
 		m.game.setFullscreen(args.State == widget.WidgetChecked)

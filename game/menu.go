@@ -168,6 +168,7 @@ func (g *Game) generateMenuResolutions() []MenuResolution {
 		1440,
 		1600,
 		1920,
+		2560,
 	}
 
 	for _, r := range ratios {
