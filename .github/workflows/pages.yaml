@@ -1,0 +1,71 @@
+---
+name: Deploy to Pages
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  GO_VERSION: "1.20"
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "${{ env.GO_VERSION }}"
+
+      - name: Install dependencies
+        shell: bash
+        run: sudo apt-get update && sudo apt-get -y install libgl1-mesa-dev xorg-dev libasound2-dev
+
+      - name: Copy static pages
+        shell: bash
+        run: cp -r pages/ dist/pages/
+
+      - name: Build WASM
+        shell: bash
+        run: GOARCH=wasm GOOS=js go build -o dist/pages/main.wasm -v
+
+      - name: Copy WASM exec script
+        shell: bash
+        run: cp $(go env GOROOT)/misc/wasm/wasm_exec.js dist/pages/.
+
+      - name: Setup pages
+        uses: actions/configure-pages@v4
+      
+      - name: Upload artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "dist/pages/"
+
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
