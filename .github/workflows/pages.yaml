@@ -41,7 +41,7 @@ jobs:
 
       - name: Copy static pages
         shell: bash
-        run: cp -r pages/ dist/pages/
+        run: mkdir dist && cp -r pages/ dist/pages/
 
       - name: Build WASM
         shell: bash
