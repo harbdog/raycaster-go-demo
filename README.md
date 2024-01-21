@@ -24,7 +24,7 @@ To run the demo from source locally:
     * `go run main.go`
 
 **NOTE**: Depending on the OS, the Ebitengine game library may have
-[additional dependencies to install](https://ebiten.org/documents/install.html).
+[additional dependencies to install](https://ebitengine.org/en/documents/install.html).
 
 ## Controls
 
