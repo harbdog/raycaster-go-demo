@@ -21,9 +21,7 @@ func titleBarContainer(m *DemoMenu) *widget.Container {
 		}))))
 
 	c.AddChild(widget.NewText(
-		widget.TextOpts.Text("Raycaster Go Demo Settings",
-			res.text.titleFace,
-			res.text.idleColor),
+		widget.TextOpts.Text("Raycaster Go Demo Settings", res.text.titleFace, res.text.idleColor),
 		widget.TextOpts.Position(widget.TextPositionStart, widget.TextPositionCenter),
 	))
 

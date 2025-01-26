@@ -1,13 +1,13 @@
 package game
 
 import (
-	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"image/color"
 	"strconv"
 
 	"github.com/ebitenui/ebitenui/image"
 	"github.com/ebitenui/ebitenui/widget"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 const (
