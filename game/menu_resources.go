@@ -6,9 +6,8 @@ import (
 
 	"github.com/ebitenui/ebitenui/image"
 	"github.com/ebitenui/ebitenui/widget"
-	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten/v2"
-	"golang.org/x/image/font"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 const (
@@ -58,16 +57,16 @@ type uiResources struct {
 type textResources struct {
 	idleColor     color.Color
 	disabledColor color.Color
-	face          font.Face
-	titleFace     font.Face
-	bigTitleFace  font.Face
-	smallFace     font.Face
+	face          text.Face
+	titleFace     text.Face
+	bigTitleFace  text.Face
+	smallFace     text.Face
 }
 
 type buttonResources struct {
 	image   *widget.ButtonImage
 	text    *widget.ButtonTextColor
-	face    font.Face
+	face    text.Face
 	padding widget.Insets
 }
 
@@ -79,13 +78,13 @@ type checkboxResources struct {
 
 type labelResources struct {
 	text *widget.LabelColor
-	face font.Face
+	face text.Face
 }
 
 type comboButtonResources struct {
 	image   *widget.ButtonImage
 	text    *widget.ButtonTextColor
-	face    font.Face
+	face    text.Face
 	graphic *widget.ButtonImageImage
 	padding widget.Insets
 }
@@ -96,7 +95,7 @@ type listResources struct {
 	trackPadding widget.Insets
 	handle       *widget.ButtonImage
 	handleSize   int
-	face         font.Face
+	face         text.Face
 	entry        *widget.ListEntryColor
 	entryPadding widget.Insets
 }
@@ -114,7 +113,7 @@ type panelResources struct {
 }
 
 type tabBookResources struct {
-	buttonFace    font.Face
+	buttonFace    text.Face
 	buttonText    *widget.ButtonTextColor
 	buttonPadding widget.Insets
 }
@@ -122,16 +121,16 @@ type tabBookResources struct {
 type headerResources struct {
 	background *image.NineSlice
 	padding    widget.Insets
-	face       font.Face
+	face       text.Face
 	color      color.Color
 }
 
 type fonts struct {
 	scale        float64
-	face         font.Face
-	titleFace    font.Face
-	bigTitleFace font.Face
-	toolTipFace  font.Face
+	face         text.Face
+	titleFace    text.Face
+	bigTitleFace text.Face
+	toolTipFace  text.Face
 }
 
 func NewUIResources(m *DemoMenu) (*uiResources, error) {
@@ -238,22 +237,21 @@ func loadFonts(fontScale float64) (*fonts, error) {
 	}, nil
 }
 
-func loadFont(path string, size float64) (font.Face, error) {
-	fontData, err := embedded.ReadFile(path)
+func loadFont(path string, size float64) (text.Face, error) {
+	fontData, err := embedded.Open(path)
 	if err != nil {
 		return nil, err
 	}
 
-	ttfFont, err := truetype.Parse(fontData)
+	ttfFont, err := text.NewGoTextFaceSource(fontData)
 	if err != nil {
 		return nil, err
 	}
 
-	return truetype.NewFace(ttfFont, &truetype.Options{
-		Size:    size,
-		DPI:     72,
-		Hinting: font.HintingFull,
-	}), nil
+	return &text.GoTextFace{
+		Source: ttfFont,
+		Size:   size,
+	}, nil
 }
 
 func loadGraphicImages(idle string, disabled string, scale float64) (*widget.ButtonImageImage, error) {
