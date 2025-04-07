@@ -85,7 +85,7 @@ type comboButtonResources struct {
 	image   *widget.ButtonImage
 	text    *widget.ButtonTextColor
 	face    text.Face
-	graphic *widget.ButtonImageImage
+	graphic *widget.GraphicImage
 	padding widget.Insets
 }
 
@@ -254,7 +254,7 @@ func loadFont(path string, size float64) (text.Face, error) {
 	}, nil
 }
 
-func loadGraphicImages(idle string, disabled string, scale float64) (*widget.ButtonImageImage, error) {
+func loadGraphicImages(idle string, disabled string, scale float64) (*widget.GraphicImage, error) {
 	idleImage, _, err := newScaledImageFromFile(idle, scale)
 	if err != nil {
 		return nil, err
@@ -268,7 +268,7 @@ func loadGraphicImages(idle string, disabled string, scale float64) (*widget.But
 		}
 	}
 
-	return &widget.ButtonImageImage{
+	return &widget.GraphicImage{
 		Idle:     idleImage,
 		Disabled: disabledImage,
 	}, nil
